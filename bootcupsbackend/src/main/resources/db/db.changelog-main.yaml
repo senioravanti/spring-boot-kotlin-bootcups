@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: 'db/v1/drop-schema.sql'
+  - include: 
+      file: 'db/v1/create-schema.sql'
+  - include: 
+      file: 'db/v1/init-schema.sql'

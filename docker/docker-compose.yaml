@@ -1,0 +1,24 @@
+name: bootcups
+
+# docker compose down -v && docker compose up -d
+
+volumes:
+  bootcups-postgres-db-data:
+    driver: local
+
+services:
+  database:
+    image: 'postgres:17.2'
+    restart: 'unless-stopped'
+
+    container_name: 'bootcups-database'
+    hostname: 'database'
+    volumes:
+      - 'bootcups-postgres-db-data:/var/lib/postgresql/data'
+
+    environment:
+      POSTRGES_DB: '${DATABASE_NAME}'
+      POSTGRES_PASSWORD: '${DATABASE_PASSWORD}'
+
+    ports:
+      - '${DATABASE_PORT}:5432'

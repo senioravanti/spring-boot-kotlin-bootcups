@@ -1,0 +1,7 @@
+telegram:
+  bot:
+    name: '${TELEGRAM_BOT_NAME}'
+    token: '${TELEGRAM_BOT_TOKEN}'
+
+  validation:
+    date-formats: 'dd.MM.yyyy,dd/MM/yyyy,yyyy-MM-dd,yyyy/MM/dd,yyyy.dd.MM'

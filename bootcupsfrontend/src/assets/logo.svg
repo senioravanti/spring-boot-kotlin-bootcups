@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <symbol 
+        id="logo" 
+        viewBox="0 0 58 58" 
+        fill="none"
+    >
+        <path d="M46 15C48.5 15 53.5 16.5 53.5 22.5C53.5 27 49.1667 29.6667 47 29.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <path d="M10 15V19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <path d="M46 19C46 28.9411 38.0515 37 28.2466 37C18.4416 37 10 28.9411 10 19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <path d="M28.2192 33C30.2597 33 32.2099 32.5828 34 31.8232M13.7023 23.5C15.2352 26.6948 17.7027 29.3239 20.687 31" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <path d="M34.1275 40.5C32.3142 41.4648 30.3112 42 28.2055 42C25.5482 42 15.3715 40.553 15.0099 31.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <path d="M46 15V19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <path d="M46 15C42.3605 20.3875 35.6616 23 28 23C20.3384 23 13.6395 20.3875 10 15" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <path d="M46 15C42.5579 9.64287 35.7882 6 28 6C20.2118 6 13.4421 9.64287 10 15" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <path d="M44.0754 16.5C40.3369 12.5412 34.5426 10 28.0377 10C21.5328 10 15.7385 12.5412 12 16.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <path d="M6.5 26.2727C3.04423 28.8507 1 32.0432 1 35.5001C1 44.0605 13.536 51.0001 29 51.0001C44.464 51.0001 57 44.0605 57 35.5001C57 32.1538 55.553 29.2682 52.3257 26.7485" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="stroke: var(--stroke-color);"
+        />
+        <ellipse cx="28" cy="17" rx="16" ry="6" fill="black"
+            style="fill: var(--stroke-color);"
+        />
+    </symbol>
+
+</svg>
