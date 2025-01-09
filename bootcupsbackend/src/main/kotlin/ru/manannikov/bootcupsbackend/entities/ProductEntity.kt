@@ -23,9 +23,9 @@ class ProductEntity {
         joinColumns = [JoinColumn(name = "product_id", nullable = false)],
         inverseJoinColumns = [JoinColumn(name = "category_id", nullable = false)]
     )
-    val category: Set<CategoryEntity> = mutableSetOf()
+    val categories: Set<CategoryEntity> = mutableSetOf()
 
-    @OneToMany(mappedBy = "product", cascade = [CascadeType.PERSIST, CascadeType.REMOVE])
+    @OneToMany(mappedBy = "product", cascade = [CascadeType.PERSIST, CascadeType.REMOVE], orphanRemoval = true)
     val menuItems: Set<MenuItemEntity> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {
@@ -40,6 +40,6 @@ class ProductEntity {
     override fun hashCode(): Int = Objects.hash(name)
 
     override fun toString(): String {
-        return "Product(id=$id, name='$name', description=$description)"
+        return "Product(id=$id, name='$name', description=$description, categories=$categories)"
     }
 }
