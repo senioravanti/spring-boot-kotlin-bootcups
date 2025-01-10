@@ -14,6 +14,9 @@ import java.math.BigDecimal
 object Specifications {
     private val logger = LogManager.getLogger(Specifications::class.java)
 
+    /**
+     * Возвращает каждый раз новый экземпляр анонимной реализации Specification
+     */
     fun menuItemDefaultFilter(
         filter: Map<String, Any>
     ): Specification<MenuItemEntity> = Specification {
