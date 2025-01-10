@@ -117,13 +117,16 @@ class MenuItemRepoTests : BaseRepoTest() {
     @Test
     fun testFindAllByCategoryFilter() {
         val menuItems = menuItemRepo.findAll(
-            Specifications.menuItemCategoryFilter(
-                listOf("Завтраки", "Выпечка", "Салаты")
+            Specifications.menuItemDefaultFilter(
+                mapOf(
+                    "menu_item_price_min" to "100.00",
+                    "categories" to listOf("Завтраки", "Выпечка", "Салаты")
+                )
             )
         )
         logger.info(listMenuItems(menuItems))
         logger.info(menuItems.size)
-        assertEquals(9, menuItems.size)
+        assertEquals(6, menuItems.size)
     }
 
     /**

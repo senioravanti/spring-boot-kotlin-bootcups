@@ -2,6 +2,7 @@ package ru.manannikov.bootcupsbackend.repos.specs
 
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import org.apache.logging.log4j.LogManager
 import org.springframework.data.jpa.domain.Specification
@@ -23,59 +24,73 @@ object Specifications {
             try {
                 when (key) {
                     "product_name" -> {
-                        if (value !is String) throw IllegalArgumentException("поле \"название продукта\" должно иметь тип String")
+                        if (value !is String) throw IllegalArgumentException(createErrorMessage("название товара"))
                         val menuItemsProductsJoin = root.join<MenuItemEntity, ProductEntity>("product")
                         val likePredicate = cb.like(menuItemsProductsJoin.get("name"), "%$value%")
                         criteria = cb.and(criteria, likePredicate)
                     }
                     "menu_item_price_min" -> {
-                        val targetPrice = convertToBigDecimal(value)
+                        if (value !is String) throw IllegalArgumentException(createErrorMessage("минимальная цена товара"))
                         criteria = cb.and(
                             criteria,
-                            cb.greaterThanOrEqualTo(root.get<BigDecimal>("price"), targetPrice)
+                            cb.greaterThanOrEqualTo(root.get<BigDecimal>("price"), BigDecimal(value))
                         )
                     }
                     "menu_item_price_max" -> {
-                        val targetPrice = convertToBigDecimal(value)
+                        if (value !is String) throw IllegalArgumentException(createErrorMessage("максимальная цена товара"))
                         criteria = cb.and(
                             criteria,
-                            cb.lessThanOrEqualTo(root.get<BigDecimal>("price"), targetPrice)
+                            cb.lessThanOrEqualTo(root.get<BigDecimal>("price"), BigDecimal(value))
                         )
                     }
                     "menu_item_makes_min" -> {
-                        val targetMakes = convertToShort(value)
+                        if (value !is String) throw IllegalArgumentException(createErrorMessage("минимальный объем порции"))
                         criteria = cb.and(
                             criteria,
-                            cb.greaterThanOrEqualTo(root.get<Short>("makes"), targetMakes)
+                            cb.greaterThanOrEqualTo(root.get<Short>("makes"), value.toShort())
                         )
                     }
                     "menu_item_makes_max" -> {
-                        val targetMakes = convertToShort(value)
+                        if (value !is String) throw IllegalArgumentException(createErrorMessage("максимальный объем порции"))
                         criteria = cb.and(
                             criteria,
-                            cb.lessThanOrEqualTo(root.get<Short>("makes"), targetMakes)
+                            cb.lessThanOrEqualTo(root.get<Short>("makes"), value.toShort())
                         )
                     }
                     "menu_item_topping" -> {
-                        if (value !is String) throw IllegalArgumentException("Поле \"топпинг\" должно иметь тип String")
+                        if (value !is String) throw IllegalArgumentException(createErrorMessage("топпинг"))
                         criteria = cb.and(
                             criteria,
                             cb.like(root.get("topping"), "%$value%")
                         )
                     }
+                    "categories" -> {
+                        if (value !is List<*>) throw IllegalArgumentException(createErrorMessage("категории", "List<String>"))
+                        val categories: List<String> = value.filterIsInstance<String>()
+                        if (categories.isEmpty()) throw IllegalArgumentException("Список категорий должен содержать хотя бы одну категорию")
+
+                        criteria = cb.and(
+                            criteria,
+                            menuItemCategoryFilter(root, cq, cb, categories)
+                        )
+                    }
                 }
             } catch (ex: IllegalArgumentException) {
                 logger.error(ex)
+            } catch (ex: NumberFormatException) {
+                logger.error("Ошибка при преобразовании строки в BigDecimal, вещественное число должно содержать точку, а не запятую:\n{}", ex.toString())
             }
         }
 
         criteria
     }
 
-    fun menuItemCategoryFilter(
+    private fun menuItemCategoryFilter(
+        root: Root<MenuItemEntity>,
+        cq: CriteriaQuery<*>?,
+        cb: CriteriaBuilder,
         categories: List<String>
-    ): Specification<MenuItemEntity> = Specification {
-        root: Root<MenuItemEntity>, cq: CriteriaQuery<*>?, cb: CriteriaBuilder ->
+    ): Predicate {
         var criteria = cb.disjunction()
 
         categories.forEach {
@@ -104,23 +119,8 @@ object Specifications {
             )
         }
 
-        criteria
+        return criteria
     }
 
-
-    private fun convertToBigDecimal(value: Any): BigDecimal {
-        return when (value) {
-            is String -> BigDecimal(value)
-            is BigDecimal -> value
-            else -> throw IllegalArgumentException("Цена должна быть задана либо как строка, либо как BigDecimal")
-        }
-    }
-
-    private fun convertToShort(value: Any): Short {
-        return when (value) {
-            is String -> value.toShort()
-            is Short -> value
-            else -> throw IllegalArgumentException("Объем порции должен быть задана либо как строка, либо как Short")
-        }
-    }
+    private fun createErrorMessage(fieldName: String, typeName: String = "String"): String = "Поле \"$fieldName\" должно иметь тип $typeName"
 }

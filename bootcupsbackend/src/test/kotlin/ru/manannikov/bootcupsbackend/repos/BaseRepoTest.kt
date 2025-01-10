@@ -29,7 +29,7 @@ abstract class BaseRepoTest {
 
         @JvmStatic
         protected fun listMenuItems(menuItems: List<MenuItemEntity>): String {
-            val logMessage = StringBuilder("Результат запроса\n---\n")
+            val logMessage = StringBuilder("Результат запроса\n---\n\n")
             menuItems.forEach {
                 logMessage.append(it).append("\n")
             }
