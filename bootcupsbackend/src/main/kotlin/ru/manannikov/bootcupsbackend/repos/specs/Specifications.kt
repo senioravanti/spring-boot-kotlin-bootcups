@@ -9,6 +9,13 @@ import org.springframework.data.jpa.domain.Specification
 import ru.manannikov.bootcupsbackend.entities.CategoryEntity
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
 import ru.manannikov.bootcupsbackend.entities.ProductEntity
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MAX
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MIN
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MAX
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_TOPPING
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_NAME
 import java.math.BigDecimal
 
 object Specifications {
@@ -26,48 +33,48 @@ object Specifications {
         filter.forEach { (key, value) ->
             try {
                 when (key) {
-                    "product_name" -> {
+                    PRODUCT_NAME -> {
                         if (value !is String) throw IllegalArgumentException(createErrorMessage("название товара"))
                         val menuItemsProductsJoin = root.join<MenuItemEntity, ProductEntity>("product")
                         val likePredicate = cb.like(menuItemsProductsJoin.get("name"), "%$value%")
                         criteria = cb.and(criteria, likePredicate)
                     }
-                    "menu_item_price_min" -> {
+                    MENU_ITEM_PRICE_MIN -> {
                         if (value !is String) throw IllegalArgumentException(createErrorMessage("минимальная цена товара"))
                         criteria = cb.and(
                             criteria,
                             cb.greaterThanOrEqualTo(root.get<BigDecimal>("price"), BigDecimal(value))
                         )
                     }
-                    "menu_item_price_max" -> {
+                    MENU_ITEM_PRICE_MAX -> {
                         if (value !is String) throw IllegalArgumentException(createErrorMessage("максимальная цена товара"))
                         criteria = cb.and(
                             criteria,
                             cb.lessThanOrEqualTo(root.get<BigDecimal>("price"), BigDecimal(value))
                         )
                     }
-                    "menu_item_makes_min" -> {
+                    MENU_ITEM_MAKES_MIN -> {
                         if (value !is String) throw IllegalArgumentException(createErrorMessage("минимальный объем порции"))
                         criteria = cb.and(
                             criteria,
                             cb.greaterThanOrEqualTo(root.get<Short>("makes"), value.toShort())
                         )
                     }
-                    "menu_item_makes_max" -> {
+                    MENU_ITEM_MAKES_MAX -> {
                         if (value !is String) throw IllegalArgumentException(createErrorMessage("максимальный объем порции"))
                         criteria = cb.and(
                             criteria,
                             cb.lessThanOrEqualTo(root.get<Short>("makes"), value.toShort())
                         )
                     }
-                    "menu_item_topping" -> {
+                    MENU_ITEM_TOPPING -> {
                         if (value !is String) throw IllegalArgumentException(createErrorMessage("топпинг"))
                         criteria = cb.and(
                             criteria,
                             cb.like(root.get("topping"), "%$value%")
                         )
                     }
-                    "categories" -> {
+                    CATEGORY -> {
                         if (value !is List<*>) throw IllegalArgumentException(createErrorMessage("категории", "List<String>"))
                         val categories: List<String> = value.filterIsInstance<String>()
                         if (categories.isEmpty()) throw IllegalArgumentException("Список категорий должен содержать хотя бы одну категорию")

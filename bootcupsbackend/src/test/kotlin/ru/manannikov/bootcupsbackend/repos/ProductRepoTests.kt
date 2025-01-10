@@ -9,6 +9,13 @@ class ProductRepoTests : BaseRepoTest() {
     lateinit var productRepo: ProductRepo
 
     @Test
+    fun testFindAll() {
+        val products = productRepo.findAll()
+        logger.info(listMenuItems(products))
+        logger.info(products.size)
+    }
+
+    @Test
     fun testFindByName() {
         val productEntity = productRepo.findByName("Цикорий")
         logger.info(productEntity)

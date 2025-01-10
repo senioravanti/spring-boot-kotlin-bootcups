@@ -12,7 +12,14 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction
 import org.springframework.data.domain.Sort.Order
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
+import ru.manannikov.bootcupsbackend.enums.Category
 import ru.manannikov.bootcupsbackend.repos.specs.Specifications
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MAX
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MIN
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MAX
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
+import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_NAME
 import java.math.BigDecimal
 import kotlin.math.ceil
 
@@ -42,9 +49,9 @@ class MenuItemRepoTests : BaseRepoTest() {
         val menuItems = menuItemRepo.findAll(
             Specifications.menuItemDefaultFilter(
                 mapOf(
-                    "product_name" to "Капучино",
-                    "menu_item_makes_min" to "360",
-                    "menu_item_makes_max" to "360"
+                    PRODUCT_NAME to "Капучино",
+                    MENU_ITEM_MAKES_MIN to "360",
+                    MENU_ITEM_MAKES_MAX to "360"
                 )
             ),
             Sort.by(Order(Direction.ASC, "makes"))
@@ -59,14 +66,15 @@ class MenuItemRepoTests : BaseRepoTest() {
         val menuItems = menuItemRepo.findAll(
             Specifications.menuItemDefaultFilter(
                 mapOf(
-                    "product_name" to "Капучино",
-                    "menu_item_price_max" to BigDecimal("550.50")
+                    PRODUCT_NAME to "Капучино",
+                    MENU_ITEM_PRICE_MAX to "550.50"
                 )
             ),
             Sort.by(Order(Direction.ASC, "price"), Order(Direction.ASC, "makes"))
         )
         logger.info(listMenuItems(menuItems))
         logger.info(menuItems.size)
+        assertEquals(2, menuItems.size)
     }
 
     /**
@@ -91,7 +99,7 @@ class MenuItemRepoTests : BaseRepoTest() {
         while (true) {
             val menuItemsPage = menuItemRepo.findAll(
                 Specifications.menuItemDefaultFilter(
-                    mapOf("product_name" to "Капучино")
+                    mapOf(PRODUCT_NAME to "Капучино")
                 ),
                 PageRequest.of(
                     i++,
@@ -119,8 +127,8 @@ class MenuItemRepoTests : BaseRepoTest() {
         val menuItems = menuItemRepo.findAll(
             Specifications.menuItemDefaultFilter(
                 mapOf(
-                    "menu_item_price_min" to "100.00",
-                    "categories" to listOf("Завтраки", "Выпечка", "Салаты")
+                    MENU_ITEM_PRICE_MIN to "100.00",
+                    CATEGORY to listOf(Category.BREAKFAST.name, Category.BACKING.name, Category.SALAD.name)
                 )
             )
         )

@@ -28,7 +28,7 @@ abstract class BaseRepoTest {
         }
 
         @JvmStatic
-        protected fun listMenuItems(menuItems: List<MenuItemEntity>): String {
+        protected fun listMenuItems(menuItems: List<Any>): String {
             val logMessage = StringBuilder("Результат запроса\n---\n\n")
             menuItems.forEach {
                 logMessage.append(it).append("\n")

@@ -105,7 +105,7 @@ ALTER TABLE employees
 /*==============================================================*/
 CREATE TABLE categories(
     category_id smallserial PRIMARY KEY,
-    category_name varchar(255) NOT NULL UNIQUE
+    category_name varchar(24) NOT NULL UNIQUE
 );
 
 -- индекс первичного ключа таблицы categories
