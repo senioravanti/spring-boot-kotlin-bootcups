@@ -10,7 +10,7 @@ spring:
       # Если используешь, hibernate properties, то задавай названия провертей в том регистре, в котором они заданы в документации.
       hibernate:
         jdbc:
-          batch_size: 16
+          batch_size: 32
           fetch_size: 32
         max_fetch_depth: 3
         show_sql: true
@@ -22,6 +22,9 @@ spring:
 logging:
   pattern:
     console: '%d{dd.MM.yyyy HH:mm:ss} %-5level [%t]: %class{0} --- %msg%n'
+
+  charset:
+    console: UTF-8
 
   level:
     root: INFO

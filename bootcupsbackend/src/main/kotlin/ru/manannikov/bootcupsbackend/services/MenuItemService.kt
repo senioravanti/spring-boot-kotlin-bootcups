@@ -1,11 +1,18 @@
 package ru.manannikov.bootcupsbackend.services
 
+import org.springframework.data.domain.PageRequest
+import ru.manannikov.bootcupsbackend.dto.SortFilterFieldDto
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
 
 interface MenuItemService {
-    fun findAll(filter: Map<String, Any>, sortFields: List<String>): List<MenuItemEntity>
-    fun save(menuItemEntity: MenuItemEntity): MenuItemEntity
-    fun update(id: Int, menuItemEntity: MenuItemEntity): MenuItemEntity
+    fun findAll(
+        pageRequest: PageRequest,
+        filter: Map<String, Any>? = null,
+    ): List<MenuItemEntity>
+
+    fun save(menuItemEntity: MenuItemEntity)
+    fun update(id: Int, menuItemEntity: MenuItemEntity)
+
     fun deleteAllById(ids: List<Int>)
 
     /**
@@ -21,7 +28,10 @@ interface MenuItemService {
      * menu_item_topping -> особенности пищевого продукта, например посыпка, начинка и т.п.
      *
      * category -> Массив категорий
-     * sort -> Массив ключей сортировки
+     *      compote, healthy_nutrition, sourdough_bread
+     *
+     * sort -> Массив ключей сортировки (должен включать )
+     *      price_asc, price_desc, makes_asc, makes_desc
      * page_index -> Индекс текущей страницы (нач с нуля)
      * page_size -> Размер страницы
      */
@@ -38,7 +48,8 @@ interface MenuItemService {
 
         const val CATEGORY = "category"
         const val SORT = "sort"
-        const val PAGE_INDEX = "page_index"
+
+        const val PAGE_NUMBER = "page_number"
         const val PAGE_SIZE = "page_size"
 
     }

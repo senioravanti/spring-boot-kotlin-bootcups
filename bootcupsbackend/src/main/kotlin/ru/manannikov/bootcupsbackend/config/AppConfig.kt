@@ -10,7 +10,10 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
 class AppConfig {
     @Bean
     fun messageSource(): MessageSource = ReloadableResourceBundleMessageSource().apply {
-        setBasename("classpath:messages/validation-messages")
+        setBasenames(
+            "classpath:messages/validation-messages",
+            "classpath:messages/ui-messages"
+        )
         setDefaultEncoding("UTF-8")
         setFallbackToSystemLocale(false)
         setUseCodeAsDefaultMessage(false)

@@ -1,3 +1,10 @@
 spring:
   datasource:
     url: 'jdbc:tc:postgresql:17.2:///testdb'
+
+logging:
+
+  level:
+    org.hibernate: DEBUG
+    org.springframework.transaction: TRACE
+    org.springframework.orm.jpa: TRACE

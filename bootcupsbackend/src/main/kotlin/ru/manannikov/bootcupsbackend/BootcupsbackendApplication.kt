@@ -3,7 +3,9 @@ package ru.manannikov.bootcupsbackend
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.core.env.AbstractEnvironment
+import org.springframework.transaction.annotation.EnableTransactionManagement
 
+@EnableTransactionManagement
 @SpringBootApplication
 class BootcupsbackendApplication {
 	companion object {

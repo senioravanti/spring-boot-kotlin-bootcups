@@ -1,7 +1,7 @@
 package ru.manannikov.bootcupsbackend.entities
 
 import jakarta.persistence.*
-import ru.manannikov.bootcupsbackend.enums.Category
+import ru.manannikov.bootcupsbackend.enums.CategoryEnum
 import java.util.*
 
 @Entity
@@ -14,7 +14,7 @@ class CategoryEntity {
 
     @Column(name = "category_name", unique = true, length = 24)
     @Enumerated(EnumType.STRING)
-    lateinit var name: Category
+    lateinit var name: CategoryEnum
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

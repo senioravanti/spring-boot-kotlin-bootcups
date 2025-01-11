@@ -12,7 +12,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction
 import org.springframework.data.domain.Sort.Order
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
-import ru.manannikov.bootcupsbackend.enums.Category
+import ru.manannikov.bootcupsbackend.enums.CategoryEnum
 import ru.manannikov.bootcupsbackend.repos.specs.Specifications
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MAX
@@ -128,7 +128,7 @@ class MenuItemRepoTests : BaseRepoTest() {
             Specifications.menuItemDefaultFilter(
                 mapOf(
                     MENU_ITEM_PRICE_MIN to "100.00",
-                    CATEGORY to listOf(Category.BREAKFAST.name, Category.BACKING.name, Category.SALAD.name)
+                    CATEGORY to listOf(CategoryEnum.BREAKFAST.name, CategoryEnum.BACKING.name, CategoryEnum.SALAD.name)
                 )
             )
         )
