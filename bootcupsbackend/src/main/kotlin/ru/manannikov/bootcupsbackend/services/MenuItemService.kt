@@ -1,14 +1,14 @@
 package ru.manannikov.bootcupsbackend.services
 
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import ru.manannikov.bootcupsbackend.dto.SortFilterFieldDto
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
 
 interface MenuItemService {
     fun findAll(
         pageRequest: PageRequest,
         filter: Map<String, Any>? = null,
-    ): List<MenuItemEntity>
+    ): Page<MenuItemEntity>
 
     fun save(menuItemEntity: MenuItemEntity)
     fun update(id: Int, menuItemEntity: MenuItemEntity)

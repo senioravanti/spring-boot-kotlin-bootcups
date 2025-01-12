@@ -1,13 +1,13 @@
 package ru.manannikov.bootcupsbackend.services.impl
 
 import org.apache.logging.log4j.LogManager
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.util.MultiValueMap
-import ru.manannikov.bootcupsbackend.dto.SortFilterFieldDto
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
 import ru.manannikov.bootcupsbackend.repos.MenuItemRepo
+import ru.manannikov.bootcupsbackend.repos.specs.Specifications
 import ru.manannikov.bootcupsbackend.services.MenuItemService
 
 @Transactional(readOnly = true)
@@ -20,8 +20,24 @@ class MenuItemServiceImpl(
     override fun findAll(
         pageRequest: PageRequest,
         filter: Map<String, Any>?
-    ): List<MenuItemEntity> {
-        TODO("Not yet implemented")
+    )
+        : Page<MenuItemEntity>
+    {
+        logger.debug("Получены filter: {}, pageRequest: {}", filter, pageRequest)
+        val menuItems = if (filter != null) {
+            menuItemRepo.findAll(
+                Specifications.menuItemDefaultFilter(
+                    filter
+                ),
+                pageRequest
+            )
+        } else {
+            menuItemRepo.findAll(
+                pageRequest
+            )
+        }
+        logger.debug("menu items:\n{}", menuItems)
+        return menuItems
     }
 
     override fun save(menuItemEntity: MenuItemEntity) {

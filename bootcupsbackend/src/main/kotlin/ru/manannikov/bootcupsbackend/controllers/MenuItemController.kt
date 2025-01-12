@@ -1,6 +1,7 @@
 package ru.manannikov.bootcupsbackend.controllers
 
 import org.apache.logging.log4j.LogManager
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Order
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.manannikov.bootcupsbackend.dto.MenuItemDto
+import ru.manannikov.bootcupsbackend.dto.PaginationResponse
 import ru.manannikov.bootcupsbackend.dto.SortFilterFieldDto
 import ru.manannikov.bootcupsbackend.enums.MenuItemSortFields
 import ru.manannikov.bootcupsbackend.services.MenuItemService
@@ -40,8 +42,8 @@ class MenuItemController(
         @RequestParam(name = PAGE_SIZE) pageSize: Int,
 
         @RequestParam params: MultiValueMap<String, String>
-    ): List<MenuItemDto> {
-        logger.info("Получен запрос со следующими параметрами: {}", params)
+    ): PaginationResponse<MenuItemDto> {
+        logger.info("Получен запрос со следующими параметрами:\n{}", params)
 
         var pageRequest = PageRequest.of(pageNumber, pageSize)
         var filter: MutableMap<String, Any>? = null
@@ -83,9 +85,20 @@ class MenuItemController(
             }
         }
 
-//        val menuItems = menuItemService.findAll(pageRequest, filter)
         logger.info("page request: {};\nfilter: {}", pageRequest, filter)
-        return listOf()
+
+        val menuItemPage = menuItemService.findAll(pageRequest, filter)
+        val content = menuItemPage.content.map { MenuItemDto.of(it) }
+        return PaginationResponse(
+            content = content,
+
+            currentPageNumber = menuItemPage.number,
+            totalElements = menuItemPage.totalElements,
+            totalPages = menuItemPage.totalPages,
+
+            hasPrevious = menuItemPage.hasPrevious(),
+            hasNext = menuItemPage.hasNext()
+        )
     }
 
     /**

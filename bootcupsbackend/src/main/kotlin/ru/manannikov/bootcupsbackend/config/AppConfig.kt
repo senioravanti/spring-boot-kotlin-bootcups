@@ -12,7 +12,8 @@ class AppConfig {
     fun messageSource(): MessageSource = ReloadableResourceBundleMessageSource().apply {
         setBasenames(
             "classpath:messages/validation-messages",
-            "classpath:messages/ui-messages"
+            "classpath:messages/ui-messages",
+            "classpath:messages/error-messages"
         )
         setDefaultEncoding("UTF-8")
         setFallbackToSystemLocale(false)

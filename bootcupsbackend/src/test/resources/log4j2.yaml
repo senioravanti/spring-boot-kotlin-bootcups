@@ -1,0 +1,22 @@
+Configuration:
+    Appenders:
+        Console:
+            name: Console
+            PatternLayout:
+                pattern: '%d{dd.MM.yyyy HH:mm:ss} %-5level [%t]: %class{10} %M --- %msg%n'
+    Loggers:
+        Root:
+            level: INFO
+            AppenderRef:
+                - ref: Console
+        Logger:
+            - name: 'ru.manannikov.bootcupsbackend'
+              level: DEBUG
+
+            - name: 'org.hibernate'
+              level: DEBUG
+
+            - name: 'org.springframework.transaction'
+              level: TRACE
+            - name: 'org.springframework.orm.jpa'
+              level: TRACE

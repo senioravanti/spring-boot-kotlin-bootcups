@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction
 import org.springframework.data.domain.Sort.Order
+import ru.manannikov.bootcupsbackend.TestcontainersTest
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
 import ru.manannikov.bootcupsbackend.enums.CategoryEnum
 import ru.manannikov.bootcupsbackend.repos.specs.Specifications
@@ -23,8 +25,8 @@ import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_
 import java.math.BigDecimal
 import kotlin.math.ceil
 
-
-class MenuItemRepoTests : BaseRepoTest() {
+@DataJpaTest
+class MenuItemRepoTests : TestcontainersTest() {
     @Autowired
     lateinit var menuItemRepo: MenuItemRepo
 
@@ -112,14 +114,6 @@ class MenuItemRepoTests : BaseRepoTest() {
 
             if (menuItemsPage.isLast) break
         }
-    }
-
-    @Test
-    fun testFindByCategory() {
-        logger.info("Выборка всех позиций меню из таблицы menu_items, прин. заданной категории")
-        val menuItems = menuItemRepo.findAllByCategory("Напитки")
-        logger.info(listMenuItems(menuItems))
-        logger.info(menuItems.size)
     }
 
     @Test

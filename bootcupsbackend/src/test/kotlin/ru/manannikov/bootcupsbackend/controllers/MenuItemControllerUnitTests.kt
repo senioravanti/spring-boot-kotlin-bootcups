@@ -1,16 +1,21 @@
 package ru.manannikov.bootcupsbackend.controllers
 
 import org.apache.logging.log4j.LogManager
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.context.annotation.Import
+import org.springframework.context.MessageSource
 import org.springframework.http.MediaType
-import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
-
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import ru.manannikov.bootcupsbackend.config.AppConfig
+import ru.manannikov.bootcupsbackend.config.WebConfig
 import ru.manannikov.bootcupsbackend.services.MenuItemService
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
@@ -20,17 +25,33 @@ import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.SORT
 import ru.manannikov.bootcupsbackend.utils.MessageUtils
 
-@Import(value = [MessageUtils::class, AppConfig::class])
-@WebMvcTest(
-    controllers = [MenuItemController::class],
+/**
+ * Должен тестировать исключительно ответы на запросы при определенных условиях
+ * При работе с модульными тестами конфигурация логера ложится на разработчика
+ */
+@ExtendWith(MockitoExtension::class)
+@TestPropertySource(
+    locations = ["classpath:application.yaml"]
 )
-class MenuItemControllerTests {
+@SpringJUnitWebConfig(classes = [AppConfig::class, WebConfig::class, MessageUtils::class])
+class MenuItemControllerUnitTests {
 
+    @Mock
+    lateinit var menuItemService: MenuItemService
     @Autowired
+    lateinit var messageUtils: MessageUtils
+    @Autowired
+    lateinit var messageSource: MessageSource
+
     lateinit var mockMvc: MockMvc
 
-    @MockitoBean
-    lateinit var menuItemService: MenuItemService
+    @BeforeEach
+    fun setupMockMvc() {
+        mockMvc = MockMvcBuilders
+            .standaloneSetup(MenuItemController(menuItemService, messageUtils))
+            .setControllerAdvice(RestExceptionHandler(messageSource))
+            .build()
+    }
 
     @Test
     fun testAll() {
@@ -45,6 +66,7 @@ class MenuItemControllerTests {
             param(PAGE_SIZE, "10")
             param(PAGE_NUMBER, "1")
         }
+        .andDo { print() }
         .andExpect {
             status { isOk() }
             content { contentType(MediaType.APPLICATION_JSON) }
@@ -53,6 +75,6 @@ class MenuItemControllerTests {
 
 
     companion object {
-        private val logger = LogManager.getLogger(MenuItemControllerTests::class.java)
+        private val logger = LogManager.getLogger(MenuItemControllerUnitTests::class.java)
     }
 }

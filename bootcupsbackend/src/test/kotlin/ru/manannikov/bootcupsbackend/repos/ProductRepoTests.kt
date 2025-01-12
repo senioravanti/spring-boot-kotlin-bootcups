@@ -3,8 +3,11 @@ package ru.manannikov.bootcupsbackend.repos
 import org.apache.logging.log4j.LogManager
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import ru.manannikov.bootcupsbackend.TestcontainersTest
 
-class ProductRepoTests : BaseRepoTest() {
+@DataJpaTest
+class ProductRepoTests : TestcontainersTest() {
     @Autowired
     lateinit var productRepo: ProductRepo
 

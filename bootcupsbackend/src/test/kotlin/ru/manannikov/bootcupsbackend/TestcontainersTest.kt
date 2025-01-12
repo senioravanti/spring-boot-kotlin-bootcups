@@ -1,17 +1,14 @@
-package ru.manannikov.bootcupsbackend.repos
+package ru.manannikov.bootcupsbackend
 
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
-import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
 
 @ActiveProfiles("test")
 @TestPropertySource("classpath:application.yaml")
-@DataJpaTest
-abstract class BaseRepoTest {
+abstract class TestcontainersTest {
     companion object {
         private val POSTGRES_CONTAINER: PostgreSQLContainer<*> = PostgreSQLContainer("postgres:17.2").withDatabaseName("repo_tests").withReuse(true)
 
