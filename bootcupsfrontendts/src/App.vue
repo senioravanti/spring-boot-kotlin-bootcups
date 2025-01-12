@@ -1,11 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import Header from './components/Header.vue'
-import TheWelcome from './components/TheWelcome.vue'
-import Table from './components/Table.vue'
 import Footer from './components/Footer.vue'
+import Table from './components/Table.vue'
 </script>
-
-# https://github.com/senioravanti/spring-boot-kotlin-bootcups
 
 <template>
   <div class="content">

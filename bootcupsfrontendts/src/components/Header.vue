@@ -1,4 +1,10 @@
 <script setup>
+export default {
+  setup() {},
+  data() {
+    return {};
+  },
+};
 defineProps({
   msg: {
     type: String,
@@ -6,30 +12,31 @@ defineProps({
   },
   brandName: {
     type: String,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 </script>
 
 <template>
   <div class="container navbar">
     <h1 class="green">{{ msg }}</h1>
     <a class="container container-logo" href="#">
-      <svg 
-        width="48" height="48" class="logo" 
+      <svg
+        width="48"
+        height="48"
+        class="logo"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <use href="../assets/logo.svg#logo"/>
+        <use href="../assets/logo.svg#logo" />
       </svg>
       <h3>
-        {{ brandName }}  
+        {{ brandName }}
       </h3>
     </a>
   </div>
 </template>
 
 <style scoped lang="scss">
-
 h1 {
   display: none;
 
@@ -46,7 +53,7 @@ h3 {
 }
 
 .logo {
-  --stroke-color: var(--color-background);  
+  --stroke-color: var(--color-background);
 }
 
 .container-logo {
@@ -58,7 +65,7 @@ h3 {
     }
 
     & .logo {
-      --stroke-color: var(--color-primary);  
+      --stroke-color: var(--color-primary);
     }
   }
 }
