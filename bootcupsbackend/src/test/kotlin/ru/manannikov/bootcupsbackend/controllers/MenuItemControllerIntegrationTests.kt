@@ -28,7 +28,7 @@ class MenuItemControllerIntegrationTests : TestcontainersTest() {
      */
     @Test
     @DisplayName("Должен возвращать 1-ю страницу, сод. 2 представления позиций меню, из 6 найденных.")
-    fun testFindAll() {
+    fun testFindFindAll() {
         logger.info("Отправляю GET запрос ...")
 
         val categoriesEnum = arrayOf(CategoryEnum.BREAKFAST, CategoryEnum.BACKING, CategoryEnum.SALAD)

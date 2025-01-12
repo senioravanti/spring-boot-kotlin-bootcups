@@ -1,12 +1,15 @@
 package ru.manannikov.bootcupsbackend.enums
 
-enum class OrderStatus {
-    /**
-     1. Оформлен;
-     2. Отменен;
-     3. Выполнен
-     */
-    RAISED,
-    CANCELLED,
-    COMPLETED;
+enum class OrderStatus(
+    override val fieldName: String
+)
+    : FieldEnum
+{
+    RAISED("order-entity.status.raised"),
+    CANCELLED("order-entity.status.cancelled"),
+    COMPLETED("order-entity.status.completed")
+    ;
+
+    override val fieldKey: String
+        get() = this.name.lowercase()
 }

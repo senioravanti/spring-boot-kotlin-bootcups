@@ -14,7 +14,7 @@ class EmployeeEntity {
     @Column(name = "employee_last_name", length = 64)
     lateinit var lastName: String
     @Column(name = "employee_first_name", length = 32)
-    lateinit var fistName: String
+    lateinit var firstName: String
     @Column(name = "employee_middle_name", length = 36)
     var middleName: String? = null
 
@@ -44,7 +44,7 @@ class EmployeeEntity {
     override fun hashCode(): Int = Objects.hash(username, phoneNumber, email)
 
     override fun toString(): String {
-        return "Employee(id=$id, lastName='$lastName', fistName='$fistName', middleName=$middleName, username='$username', password='$password', email='$email', phoneNumber='$phoneNumber')"
+        return "Employee(id=$id, lastName='$lastName', fistName='$firstName', middleName=$middleName, username='$username', password='$password', email='$email', phoneNumber='$phoneNumber')"
     }
 
 

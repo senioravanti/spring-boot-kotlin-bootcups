@@ -1,6 +1,7 @@
 package ru.manannikov.bootcupsbackend.entities
 
 import jakarta.persistence.*
+import ru.manannikov.bootcupsbackend.enums.RoleEnum
 import java.util.*
 
 @Entity
@@ -11,8 +12,9 @@ class RoleEntity {
     @Column(name = "role_id")
     var id: Short? = null
 
-    @Column(name = "role_name", unique = true, length = 255)
-    lateinit var name: String
+    @Column(name = "role_name", unique = true, length = 32)
+    @Enumerated(EnumType.STRING)
+    var name: RoleEnum = RoleEnum.BARISTA
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

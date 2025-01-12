@@ -1,19 +1,16 @@
 package ru.manannikov.bootcupsbackend.controllers
 
+import jakarta.validation.Valid
 import org.apache.logging.log4j.LogManager
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Order
 import org.springframework.util.MultiValueMap
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import ru.manannikov.bootcupsbackend.dto.MenuItemDto
 import ru.manannikov.bootcupsbackend.dto.PaginationResponse
-import ru.manannikov.bootcupsbackend.dto.SortFilterFieldDto
+import ru.manannikov.bootcupsbackend.dto.FieldEnumDto
 import ru.manannikov.bootcupsbackend.enums.MenuItemSortFields
 import ru.manannikov.bootcupsbackend.services.MenuItemService
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
@@ -26,18 +23,18 @@ import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_NUM
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_SIZE
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_NAME
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.SORT
-import ru.manannikov.bootcupsbackend.utils.MessageUtils
+import ru.manannikov.bootcupsbackend.utils.Mapper
 
 @Validated
 @RestController
 @RequestMapping("/v1/menu")
 class MenuItemController(
     private val menuItemService: MenuItemService,
-    private val messageUtils: MessageUtils
+    private val mapper: Mapper
 ) {
 
     @GetMapping(path = ["", "/"])
-    fun all(
+    fun findAll(
         @RequestParam(name = PAGE_NUMBER) pageNumber: Int,
         @RequestParam(name = PAGE_SIZE) pageSize: Int,
 
@@ -104,11 +101,48 @@ class MenuItemController(
     /**
      * Возвращает ключи сортировки (в нижнем регистре) и их названия
      */
-    @GetMapping(path = ["/sort-fields"])
-    fun sortFields(): List<SortFilterFieldDto> {
-        return messageUtils.mapFieldEnumToEnumDto(
+    @GetMapping("/sort-fields")
+    fun sortFields(): List<FieldEnumDto> {
+        return mapper.fieldEnumToFieldEnumDto(
             MenuItemSortFields.entries
         )
+    }
+
+    @GetMapping("/{id}")
+    fun findById(
+        @PathVariable("id") id: Int
+    ): MenuItemDto = MenuItemDto.of(
+        menuItemService.findById(id)
+    )
+
+    @PostMapping(path = ["", "/"])
+    fun create(
+        @Valid @RequestBody menuItem: MenuItemDto
+    ) {
+        logger.trace("Запрос на создание новой позиции меню:\n{}", menuItem)
+        menuItemService.save(
+            menuItem.toEntity()
+        )
+    }
+
+    @PutMapping("/{id}")
+    fun update(
+        @PathVariable("id") id: Int,
+        @Valid @RequestBody menuItem: MenuItemDto
+    ) {
+        logger.trace("Запрос на обновление существующей позиции меню:\n{}", menuItem)
+        menuItemService.update(
+            id,
+            menuItem.toEntity()
+        )
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(
+        @PathVariable("id") id: Int
+    ) {
+        logger.trace("Запрос на удаление существующей позиции меню ...")
+        menuItemService.deleteById(id)
     }
 
     companion object {

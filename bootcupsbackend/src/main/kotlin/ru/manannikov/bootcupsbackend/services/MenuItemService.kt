@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
 
 interface MenuItemService {
+    fun findById(id: Int): MenuItemEntity
     fun findAll(
         pageRequest: PageRequest,
         filter: Map<String, Any>? = null,
@@ -13,7 +14,7 @@ interface MenuItemService {
     fun save(menuItemEntity: MenuItemEntity)
     fun update(id: Int, menuItemEntity: MenuItemEntity)
 
-    fun deleteAllById(ids: List<Int>)
+    fun deleteById(id: Int)
 
     /**
      * Названия параметров запросов, относящихся к пагинации, фильтрации и сортировке позиций меню

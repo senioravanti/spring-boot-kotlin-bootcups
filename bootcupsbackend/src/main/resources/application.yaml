@@ -28,5 +28,5 @@ logging:
 
   level:
     root: INFO
-    ru.manannikov.testspringrest: DEBUG
+    ru.manannikov.bootcupsbackend: TRACE
     org.springframework.boot: DEBUG

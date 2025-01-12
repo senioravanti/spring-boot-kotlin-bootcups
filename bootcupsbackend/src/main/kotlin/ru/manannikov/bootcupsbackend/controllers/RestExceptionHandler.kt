@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.manannikov.bootcupsbackend.dto.ViolationDto
+import ru.manannikov.bootcupsbackend.exceptions.EntityAlreadyExistsException
 import ru.manannikov.bootcupsbackend.exceptions.NotFoundException
 import java.net.URI
 import java.time.LocalDateTime
@@ -53,7 +54,7 @@ class RestExceptionHandler(
         ).apply {
             type = createTagURI(ex::class.qualifiedName!!)
         }
-        logger.error("Передано недопустимое значение параметра:\n{}", ex.toString())
+        logger.error("Передано недопустимое значение параметра запроса:\n{}", ex.toString())
         return problemDetail
     }
 
@@ -81,20 +82,29 @@ class RestExceptionHandler(
     {
         val args = mutableListOf<Any>(ex.entityClass)
         ex.entityId ?.let {args.plus(it)}
-
         val errorMessage = messageSource.getMessage(ex.message!!, args.toTypedArray(), Locale.getDefault())
 
-        val problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.NOT_FOUND,
-            messageSource.getMessage("exception.not-found.detail", null, Locale.getDefault())
-        ).apply {
-            type = createTagURI(ex::class.qualifiedName!!)
-            properties = mapOf(
-                "description" to errorMessage
-            )
-        }
-        logger.error(errorMessage)
-        return problemDetail
+        logger.error("Откат запроса на выборку:\n{}", errorMessage)
+        return createProblemDetailForCustomException(
+            "exception.not-found.detail",
+            ex::class.qualifiedName!!,
+            errorMessage
+        )
+    }
+
+    @ExceptionHandler(exception = [EntityAlreadyExistsException::class])
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleEntityAlreadyExistsException(ex: EntityAlreadyExistsException)
+        : ProblemDetail
+    {
+        val errorMessage = messageSource.getMessage(ex.message!!, arrayOf(ex.tableName), Locale.getDefault())
+
+        logger.error("Откат запроса на добавление:\n{}", errorMessage)
+        return createProblemDetailForCustomException(
+            "exception.illegal-argument.detail",
+            ex::class.qualifiedName!!,
+            errorMessage
+        )
     }
 
     @ExceptionHandler(exception = [Exception::class])
@@ -105,13 +115,31 @@ class RestExceptionHandler(
         : ProblemDetail
     {
         val problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.BAD_REQUEST,
+            HttpStatus.INTERNAL_SERVER_ERROR,
             messageSource.getMessage("exception.exception.detail", null, Locale.getDefault())
         ).apply {
             type = createTagURI(ex::class.qualifiedName!!)
         }
         logger.error("Внутренняя ошибка сервера:\n{}", ex.toString())
         return problemDetail
+    }
+
+    private fun createProblemDetailForCustomException(
+        problemDetailCode: String,
+        qualifiedClassName: String,
+        errorMessage: String
+    )
+        : ProblemDetail
+    {
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST,
+            messageSource.getMessage(problemDetailCode, null, Locale.getDefault())
+        ).apply {
+            type = createTagURI(qualifiedClassName)
+            properties = mapOf(
+                "description" to errorMessage
+            )
+        }
     }
 
     companion object {

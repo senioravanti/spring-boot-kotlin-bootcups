@@ -1,12 +1,11 @@
 package ru.manannikov.bootcupsbackend.enums
 
-enum class MenuItemSortFields(
+enum class RoleEnum(
     override val fieldName: String
-)
-    : FieldEnum
-{
-    PRICE("menu-item-entity.fields.price"),
-    MAKES( "menu-item-entity.fields.makes")
+) : FieldEnum {
+    BARISTA("role-entity.name.barista"),
+    ADMIN("role-entity.name.admin"),
+    OWNER("role-entity.name.owner")
     ;
 
     override val fieldKey: String

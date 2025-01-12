@@ -17,6 +17,8 @@ CREATE UNIQUE INDEX unit_pk ON units(unit_id);
 CREATE TABLE clients(
     client_id bigserial PRIMARY KEY,
 
+    client_chat_id bigint DEFAULT NULL,
+
     client_name varchar(128) NOT NULL,
     client_birthday date DEFAULT NULL,
     client_email varchar(100) DEFAULT NULL UNIQUE,
@@ -64,7 +66,7 @@ ALTER TABLE client_bonus_cards
 /*==============================================================*/
 CREATE TABLE roles(
     role_id smallserial NOT NULL,
-    role_name varchar(255) NOT NULL UNIQUE,
+    role_name varchar(32) NOT NULL UNIQUE,
     CONSTRAINT pk_role PRIMARY KEY (role_id)
 );
 
@@ -78,6 +80,7 @@ CREATE UNIQUE INDEX role_pk ON roles(role_id);
 CREATE TABLE employees(
     employee_id serial PRIMARY KEY,
     role_id int2 NOT NULL,
+
     employee_last_name varchar(64) NOT NULL,
     employee_first_name varchar(32) NOT NULL,
     employee_middle_name varchar(36) DEFAULT NULL,
@@ -85,6 +88,8 @@ CREATE TABLE employees(
     employee_password varchar(100) NOT NULL,
     employee_email varchar(100) NOT NULL UNIQUE,
     employee_phone_number varchar(18) NOT NULL UNIQUE
+
+    employee_photo_uri varchar(1024) UNIQUE DEFAULT NULL
 );
 
 -- индекс первичного ключа таблицы employees

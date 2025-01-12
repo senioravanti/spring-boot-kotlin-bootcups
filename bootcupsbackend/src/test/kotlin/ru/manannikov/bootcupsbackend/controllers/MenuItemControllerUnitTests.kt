@@ -23,7 +23,7 @@ import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_NUM
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_SIZE
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_NAME
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.SORT
-import ru.manannikov.bootcupsbackend.utils.MessageUtils
+import ru.manannikov.bootcupsbackend.utils.Mapper
 
 /**
  * Должен тестировать исключительно ответы на запросы при определенных условиях
@@ -33,13 +33,13 @@ import ru.manannikov.bootcupsbackend.utils.MessageUtils
 @TestPropertySource(
     locations = ["classpath:application.yaml"]
 )
-@SpringJUnitWebConfig(classes = [AppConfig::class, WebConfig::class, MessageUtils::class])
+@SpringJUnitWebConfig(classes = [AppConfig::class, WebConfig::class, Mapper::class])
 class MenuItemControllerUnitTests {
 
     @Mock
     lateinit var menuItemService: MenuItemService
     @Autowired
-    lateinit var messageUtils: MessageUtils
+    lateinit var mapper: Mapper
     @Autowired
     lateinit var messageSource: MessageSource
 
@@ -48,13 +48,13 @@ class MenuItemControllerUnitTests {
     @BeforeEach
     fun setupMockMvc() {
         mockMvc = MockMvcBuilders
-            .standaloneSetup(MenuItemController(menuItemService, messageUtils))
+            .standaloneSetup(MenuItemController(menuItemService, mapper))
             .setControllerAdvice(RestExceptionHandler(messageSource))
             .build()
     }
 
     @Test
-    fun testAll() {
+    fun testFindAll() {
         mockMvc.get("/api/v1/menu/") {
             contextPath = "/api"
 

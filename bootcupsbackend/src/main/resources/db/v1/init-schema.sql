@@ -17,59 +17,79 @@ INSERT INTO employees(
     employee_username,
     employee_password,
     employee_email,
-    employee_phone_number)
-VALUES ((
-        SELECT
-            role_id
-        FROM
-            roles
-        WHERE
-            role_name = 'BARISTA'), 'Мананников', 'Антон', 'Олегович',
-        -- хеш bcypt ф-ции соотв. "raw" паролю: 12345
-        'senioravanti', '$2a$10$iPOYNe2H41BLNEzBFbB7YegRb9FZG0iAvA3cKbzYFEMuDaRItrr9O', 'senioravanti@vk.com', '+7 900 600 21-14'),((
-    SELECT
-        role_id
-    FROM roles
-    WHERE
-        role_name = 'BARISTA'), 'Абрамов', 'Максим', 'Алексеевич',
--- хеш bcypt ф-ции соотв. "raw" паролю: l&u0-ks
-'lurks', '$2a$10$uGJknegCRoJ118loCdVCH.Rvs0/IeerXYayBcKH4ufQeRn1FGbeY.', 'lurks@gmail.com', '+996 960 450 24-64'),((
-    SELECT
-        role_id
-    FROM roles
-WHERE
-    role_name = 'OWNER'), 'Соколов', 'Роман', 'Добрыниевич',
--- хеш bcypt ф-ции соотв. "raw" паролю: s0kol
-'s0kol228', '$2a$10$QLMYZbZrte1coSA3DZuHguQJ4GXfB9Hn6AIdDSGwUPNKlvQrgxmmO', 'sokol228@gmail.com', '+996 666 450 55-35'),((
-    SELECT
-        role_id
-    FROM roles
-WHERE
-    role_name = 'ADMIN'), 'Шевкун', 'Роман', 'Иванович',
--- хеш bcypt ф-ции соотв. "raw" паролю: ШевкунРИ
-'sollen', '$2a$10$k6MhUfaYHwIRC/N0UFvHbucEx3AhxMoamTuonwby8mL3UV3iAx/ai', 's$llen@gmail.com', '+1 900 700 12-21');
+    employee_phone_number,
 
-INSERT INTO employees(
-    role_id,
-    employee_last_name,
-    employee_first_name,
-    employee_middle_name,
-    employee_username,
-    employee_password,
-    employee_email,
-    employee_phone_number)
-VALUES ((
+    employee_photo_uri
+)
+VALUES (
+    (
         SELECT
             role_id
         FROM
             roles
         WHERE
-            role_name = 'BARISTA'), 'Асадов', 'Борис', 'Измаилович',
-        -- хеш bcypt ф-ции соотв. "raw" паролю: sys0eye1
-        'asad_syr_36', '$2a$10$KBxmbWrzh8Rmc21lGRPlUO3pfKVirWKsmdSes963v8vdOZYccRpMS', 'asad0bar@vk.com', '+963 890 666 22-88');
+            role_name = 'BARISTA'
+    ), 
+    'Мананников', 'Антон', 'Олегович',
+    -- хеш bcypt ф-ции соотв. "raw" паролю: 12345
+    'senioravanti', '$2a$10$iPOYNe2H41BLNEzBFbB7YegRb9FZG0iAvA3cKbzYFEMuDaRItrr9O', 'senioravanti@vk.com', '+7 900 600 21-14',
+    DEFAULT
+), (
+    (
+        SELECT
+            role_id
+        FROM roles
+        WHERE role_name = 'BARISTA'
+    ), 
+    'Абрамов', 'Максим', 'Алексеевич',
+-- хеш bcypt ф-ции соотв. "raw" паролю: l&u0-ks
+    'lurks', 
+    '$2a$10$uGJknegCRoJ118loCdVCH.Rvs0/IeerXYayBcKH4ufQeRn1FGbeY.', 'lurks@gmail.com', '+996 960 450 24-64',
+    DEFAULT
+), (
+    (
+        SELECT
+            role_id
+        FROM roles
+        WHERE role_name = 'OWNER'
+    ), 
+    'Соколов', 'Роман', 'Добрыниевич',
+-- хеш bcypt ф-ции соотв. "raw" паролю: s0kol
+    's0kol228', '$2a$10$QLMYZbZrte1coSA3DZuHguQJ4GXfB9Hn6AIdDSGwUPNKlvQrgxmmO', 'sokol228@gmail.com', '+996 666 450 55-35',
+    DEFAULT
+), (
+    (
+        SELECT
+            role_id
+        FROM roles
+        WHERE
+        role_name = 'ADMIN'
+    ), 
+    'Шевкун', 'Роман', 'Иванович',
+-- хеш bcypt ф-ции соотв. "raw" паролю: ШевкунРИ
+    'sollen', '$2a$10$k6MhUfaYHwIRC/N0UFvHbucEx3AhxMoamTuonwby8mL3UV3iAx/ai', 
+    's$llen@gmail.com', '+1 900 700 12-21',
+    DEFAULT
+), (
+    (
+        SELECT
+            role_id
+        FROM
+            roles
+        WHERE
+            role_name = 'BARISTA'
+    ), 
+    'Асадов', 'Борис', 'Измаилович',
+-- хеш bcypt ф-ции соотв. "raw" паролю: sys0eye1
+    'asad_syr_36', 
+    '$2a$10$KBxmbWrzh8Rmc21lGRPlUO3pfKVirWKsmdSes963v8vdOZYccRpMS', 'asad0bar@vk.com', '+963 890 666 22-88',
+    DEFAULT
+);
 
 -- clients, Клиенты, базовая таблица, 4 записи
 INSERT INTO clients(
+    client_chat_id,
+
     client_name,
     client_birthday,
     client_email,
@@ -77,24 +97,32 @@ INSERT INTO clients(
     client_registration_state
 )
 VALUES (
+    DEFAULT,
+
     'Пётр',
     '2004-10-21',
     'pertus0sa@gmail.com',
     '+7 800 543 34-54',
     'REGISTERED'
 ), (
+    DEFAULT,
+
     'Александр',
     '1999-12-31',
     'alexa_a@vk.com',
     '+7 999 303 23-84',
     'REGISTERED'
 ), (
+    DEFAULT,
+
     'Святослав',
     '2006-09-24',
     'svyatoslav_v@gmail.com',
     '+7 999 333 55-44',
     'REGISTERED'
 ), (
+    DEFAULT,
+
     'Иван',
     '2003-11-11',
     'vanyok666v@mail.ru',

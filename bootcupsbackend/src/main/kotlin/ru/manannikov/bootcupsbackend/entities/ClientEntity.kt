@@ -5,12 +5,19 @@ import ru.manannikov.bootcupsbackend.enums.RegistrationState
 import java.time.LocalDate
 import java.util.*
 
+/**
+ * id -> суррогатный первичный ключ, генерируется СУБД
+ * chatId -> альтернативный ключ, генерируется Telegram
+ */
+
 @Entity
 @Table(name = "clients")
 class ClientEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_id")
     var id: Long? = null
+
+    var chatId: Long? = null
 
     @Column(name = "client_name", length = 128)
     var name: String? = null
