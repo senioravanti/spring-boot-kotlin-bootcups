@@ -6,9 +6,8 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import org.apache.logging.log4j.LogManager
 import org.springframework.data.jpa.domain.Specification
-import ru.manannikov.bootcupsbackend.entities.CategoryEntity
-import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
-import ru.manannikov.bootcupsbackend.entities.ProductEntity
+import ru.manannikov.bootcupsbackend.entities.*
+import ru.manannikov.bootcupsbackend.enums.RoleEnum
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MAX
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MIN
@@ -130,6 +129,20 @@ object Specifications {
         }
 
         return criteria
+    }
+
+    /**
+     * Фильтруем сотрудников по занимаемой должности
+     */
+    fun employeeRoleFilter(
+        roleName: RoleEnum
+    ): Specification<EmployeeEntity> = Specification {
+        root: Root<EmployeeEntity>, cq: CriteriaQuery<*>?, cb: CriteriaBuilder ->
+
+        val employeesRoleJoin = root.join<EmployeeEntity, RoleEntity>("role")
+        val criteria = cb.equal(employeesRoleJoin.get<String>("name"), roleName.name)
+
+        criteria
     }
 
     private fun createErrorMessage(fieldName: String, typeName: String = "String"): String = "Поле \"$fieldName\" должно иметь тип $typeName"

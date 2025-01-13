@@ -13,9 +13,9 @@ import ru.manannikov.bootcupsbackend.TestcontainersTest
 import ru.manannikov.bootcupsbackend.enums.CategoryEnum
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
-import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_NUMBER
-import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_SIZE
-import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.SORT
+import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
+import ru.manannikov.bootcupsbackend.utils.PAGE_SIZE
+import ru.manannikov.bootcupsbackend.utils.SORT
 
 @AutoConfigureMockMvc
 @SpringBootTest

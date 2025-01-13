@@ -87,7 +87,7 @@ CREATE TABLE employees(
     employee_username varchar(128) NOT NULL,
     employee_password varchar(100) NOT NULL,
     employee_email varchar(100) NOT NULL UNIQUE,
-    employee_phone_number varchar(18) NOT NULL UNIQUE
+    employee_phone_number varchar(18) NOT NULL UNIQUE,
 
     employee_photo_uri varchar(1024) UNIQUE DEFAULT NULL
 );

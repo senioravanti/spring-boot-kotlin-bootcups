@@ -2,6 +2,7 @@ package ru.manannikov.bootcupsbackend.controllers
 
 import org.apache.logging.log4j.LogManager
 import org.springframework.context.MessageSource
+import org.springframework.context.NoSuchMessageException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -48,14 +49,19 @@ class RestExceptionHandler(
     fun handleIllegalArgumentException(ex: IllegalArgumentException)
         : ProblemDetail
     {
-        val problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.BAD_REQUEST,
-            messageSource.getMessage("exception.illegal-argument.detail", null, Locale.getDefault())
-        ).apply {
-            type = createTagURI(ex::class.qualifiedName!!)
+        val errorMessage = try {
+            messageSource.getMessage(ex.message!!, null, Locale.getDefault())
+        } catch (ex: NoSuchMessageException) {
+            null
         }
-        logger.error("Передано недопустимое значение параметра запроса:\n{}", ex.toString())
-        return problemDetail
+
+        logger.error("Передано недопустимое значение параметра запроса:\n{}", errorMessage ?: ex.toString())
+        return createProblemDetailForRuntimeException(
+            HttpStatus.BAD_REQUEST,
+            "exception.illegal-argument.detail",
+            ex,
+            errorMessage
+        )
     }
 
     @ExceptionHandler(exception = [DataIntegrityViolationException::class])
@@ -85,9 +91,10 @@ class RestExceptionHandler(
         val errorMessage = messageSource.getMessage(ex.message!!, args.toTypedArray(), Locale.getDefault())
 
         logger.error("Откат запроса на выборку:\n{}", errorMessage)
-        return createProblemDetailForCustomException(
+        return createProblemDetailForRuntimeException(
+            HttpStatus.NOT_FOUND,
             "exception.not-found.detail",
-            ex::class.qualifiedName!!,
+            ex,
             errorMessage
         )
     }
@@ -100,9 +107,10 @@ class RestExceptionHandler(
         val errorMessage = messageSource.getMessage(ex.message!!, arrayOf(ex.tableName), Locale.getDefault())
 
         logger.error("Откат запроса на добавление:\n{}", errorMessage)
-        return createProblemDetailForCustomException(
+        return createProblemDetailForRuntimeException(
+            HttpStatus.BAD_REQUEST,
             "exception.illegal-argument.detail",
-            ex::class.qualifiedName!!,
+            ex,
             errorMessage
         )
     }
@@ -124,21 +132,24 @@ class RestExceptionHandler(
         return problemDetail
     }
 
-    private fun createProblemDetailForCustomException(
+    private fun createProblemDetailForRuntimeException(
+        statusCode: HttpStatus,
         problemDetailCode: String,
-        qualifiedClassName: String,
-        errorMessage: String
+        ex: RuntimeException,
+        errorMessage: String?
     )
         : ProblemDetail
     {
         return ProblemDetail.forStatusAndDetail(
-            HttpStatus.BAD_REQUEST,
+            statusCode,
             messageSource.getMessage(problemDetailCode, null, Locale.getDefault())
         ).apply {
-            type = createTagURI(qualifiedClassName)
-            properties = mapOf(
-                "description" to errorMessage
-            )
+            type = createTagURI(ex::class.qualifiedName!!)
+            errorMessage ?.let {
+                properties = mapOf(
+                    "description" to it
+                )
+            }
         }
     }
 

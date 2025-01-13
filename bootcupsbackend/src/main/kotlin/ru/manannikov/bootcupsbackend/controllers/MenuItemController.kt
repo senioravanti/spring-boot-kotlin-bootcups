@@ -8,9 +8,9 @@ import org.springframework.data.domain.Sort.Order
 import org.springframework.util.MultiValueMap
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import ru.manannikov.bootcupsbackend.dto.FieldEnumDto
 import ru.manannikov.bootcupsbackend.dto.MenuItemDto
 import ru.manannikov.bootcupsbackend.dto.PaginationResponse
-import ru.manannikov.bootcupsbackend.dto.FieldEnumDto
 import ru.manannikov.bootcupsbackend.enums.MenuItemSortFields
 import ru.manannikov.bootcupsbackend.services.MenuItemService
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
@@ -19,18 +19,19 @@ import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITE
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MAX
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_TOPPING
-import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_NUMBER
-import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_SIZE
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_NAME
-import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.SORT
-import ru.manannikov.bootcupsbackend.utils.Mapper
+import ru.manannikov.bootcupsbackend.utils.ModelConverter
+import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
+import ru.manannikov.bootcupsbackend.utils.PAGE_SIZE
+import ru.manannikov.bootcupsbackend.utils.SORT
+import ru.manannikov.bootcupsbackend.utils.ServiceUtils.sortFromSortCriteria
 
 @Validated
 @RestController
 @RequestMapping("/v1/menu")
 class MenuItemController(
     private val menuItemService: MenuItemService,
-    private val mapper: Mapper
+    private val modelConverter: ModelConverter
 ) {
 
     @GetMapping(path = ["", "/"])
@@ -45,24 +46,15 @@ class MenuItemController(
         var pageRequest = PageRequest.of(pageNumber, pageSize)
         var filter: MutableMap<String, Any>? = null
 
-        var sortOrders: List<Order>?
-
         params.forEach { (key, value) ->
             when (key) {
                 SORT -> {
-                    val sortDirectionRegex = Regex("asc|desc")
-                    sortOrders = value.map {
-                        val sortData = it.split("_")
-
-                        if (sortData.size != 2 || !sortDirectionRegex.matches(sortData[1]))
-                            throw IllegalArgumentException("Заданы некорректные критерии сортировки")
-
-                        Order(
-                            Sort.Direction.fromString(sortData[1]),
-                            sortData[0]
+                    pageRequest = pageRequest.withSort(
+                        sortFromSortCriteria(
+                            value,
+                            MenuItemSortFields.entries.map { it.fieldKey }
                         )
-                    }
-                    pageRequest = pageRequest.withSort(Sort.by(sortOrders!!))
+                    )
                 }
                 PRODUCT_NAME,
                 MENU_ITEM_PRICE_MIN, MENU_ITEM_PRICE_MAX,
@@ -84,17 +76,9 @@ class MenuItemController(
 
         logger.info("page request: {};\nfilter: {}", pageRequest, filter)
 
-        val menuItemPage = menuItemService.findAll(pageRequest, filter)
-        val content = menuItemPage.content.map { MenuItemDto.of(it) }
-        return PaginationResponse(
-            content = content,
-
-            currentPageNumber = menuItemPage.number,
-            totalElements = menuItemPage.totalElements,
-            totalPages = menuItemPage.totalPages,
-
-            hasPrevious = menuItemPage.hasPrevious(),
-            hasNext = menuItemPage.hasNext()
+        return PaginationResponse.of(
+            menuItemService.findAll(pageRequest, filter),
+            MenuItemDto::of
         )
     }
 
@@ -103,7 +87,7 @@ class MenuItemController(
      */
     @GetMapping("/sort-fields")
     fun sortFields(): List<FieldEnumDto> {
-        return mapper.fieldEnumToFieldEnumDto(
+        return modelConverter.fieldEnumToFieldEnumDto(
             MenuItemSortFields.entries
         )
     }
@@ -130,7 +114,7 @@ class MenuItemController(
         @PathVariable("id") id: Int,
         @Valid @RequestBody menuItem: MenuItemDto
     ) {
-        logger.trace("Запрос на обновление существующей позиции меню:\n{}", menuItem)
+        logger.trace("Запрос на обновление позиции меню с идентификатором {}:\n{}", id, menuItem)
         menuItemService.update(
             id,
             menuItem.toEntity()

@@ -1,7 +1,6 @@
 package ru.manannikov.bootcupsbackend.utils
 
 import org.springframework.context.MessageSource
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Component
 import ru.manannikov.bootcupsbackend.dto.*
 import ru.manannikov.bootcupsbackend.entities.BonusCardEntity
@@ -11,7 +10,7 @@ import ru.manannikov.bootcupsbackend.enums.FieldEnum
 import java.util.*
 
 @Component("messageUtils")
-class Mapper(
+class ModelConverter(
     private val messageSource: MessageSource
 ) {
     fun fieldEnumToFieldEnumDto(fieldEnum: FieldEnum) = FieldEnumDto(

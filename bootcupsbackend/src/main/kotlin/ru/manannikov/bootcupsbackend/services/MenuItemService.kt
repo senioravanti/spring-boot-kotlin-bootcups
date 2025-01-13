@@ -1,13 +1,13 @@
 package ru.manannikov.bootcupsbackend.services
 
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
 
 interface MenuItemService {
     fun findById(id: Int): MenuItemEntity
     fun findAll(
-        pageRequest: PageRequest,
+        pageRequest: Pageable,
         filter: Map<String, Any>? = null,
     ): Page<MenuItemEntity>
 
@@ -31,10 +31,6 @@ interface MenuItemService {
      * category -> Массив категорий
      *      compote, healthy_nutrition, sourdough_bread
      *
-     * sort -> Массив ключей сортировки (должен включать )
-     *      price_asc, price_desc, makes_asc, makes_desc
-     * page_index -> Индекс текущей страницы (нач с нуля)
-     * page_size -> Размер страницы
      */
     companion object {
         const val PRODUCT_NAME = "product_name"
@@ -48,10 +44,5 @@ interface MenuItemService {
         const val MENU_ITEM_TOPPING = "menu_item_topping"
 
         const val CATEGORY = "category"
-        const val SORT = "sort"
-
-        const val PAGE_NUMBER = "page_number"
-        const val PAGE_SIZE = "page_size"
-
     }
 }

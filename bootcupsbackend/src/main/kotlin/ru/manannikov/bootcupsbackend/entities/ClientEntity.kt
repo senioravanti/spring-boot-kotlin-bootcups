@@ -17,6 +17,7 @@ class ClientEntity {
     @Column(name = "client_id")
     var id: Long? = null
 
+    @Column(name = "client_chat_id")
     var chatId: Long? = null
 
     @Column(name = "client_name", length = 128)

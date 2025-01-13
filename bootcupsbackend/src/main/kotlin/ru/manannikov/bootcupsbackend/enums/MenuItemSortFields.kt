@@ -5,8 +5,8 @@ enum class MenuItemSortFields(
 )
     : FieldEnum
 {
-    PRICE("menu-item-entity.fields.price"),
-    MAKES( "menu-item-entity.fields.makes")
+    PRICE("menu-item-entity.sort-fields.price"),
+    MAKES( "menu-item-entity.sort-fields.makes")
     ;
 
     override val fieldKey: String

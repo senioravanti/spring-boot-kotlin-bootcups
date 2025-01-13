@@ -34,6 +34,9 @@ class OrderEntity {
     @JoinColumn(name = "employee_id")
     lateinit var employee: EmployeeEntity
 
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.PERSIST, CascadeType.REMOVE], orphanRemoval = true)
+    val orderItems: Set<OrderItemEntity> = mutableSetOf()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this.javaClass != other.javaClass) return false

@@ -1,11 +1,14 @@
 package ru.manannikov.bootcupsbackend.entities
 
+import jakarta.persistence.Table
 import jakarta.validation.Validation
 import jakarta.validation.Validator
 import org.apache.logging.log4j.LogManager
+import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import ru.manannikov.bootcupsbackend.utils.ServiceUtils.tableNameFromEntity
 import java.math.BigDecimal
 import java.time.Instant
 
@@ -17,6 +20,15 @@ class EntityEqualityTests {
     fun setUp() {
         val validationFactory = Validation.buildDefaultValidatorFactory()
         validator = validationFactory.validator
+    }
+
+    @Test
+    fun testTableName() {
+        val expectedTableName = "menu_items"
+        assertAll (
+            { assertEquals(expectedTableName, tableNameFromEntity(MenuItemEntity::class)) },
+            { assertEquals(expectedTableName, MenuItemEntity::class.java.getDeclaredAnnotationsByType(Table::class.java)[0].name) }
+        )
     }
 
     @Test

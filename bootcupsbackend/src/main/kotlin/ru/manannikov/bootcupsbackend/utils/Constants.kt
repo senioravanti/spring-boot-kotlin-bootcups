@@ -9,3 +9,16 @@ const val PASSWORD_REGEXP = """^(?=.*[0-9])(?=.*[A-Z])(?=.*[*!@#$%^&()\[\]<>{}\-
 
 const val EMAIL_REGEXP = """^(?=[a-zA-Z])(?=[\w.-]+@[a-z-]+\.[a-z]{2,}).{6,100}$"""
 const val PHONE_NUMBER_REGEXP = """^([+][0-9]{1,3}\s?[0-9()]{3,5}\s?[0-9]{3}\s?[0-9]{2}[-\s]?[0-9]{2})$"""
+
+/**
+ * Параметры запросов на выборку
+ *
+ * page_index -> Индекс текущей страницы (нач с нуля)
+ * page_size -> Размер страницы
+ * sort -> Массив ключей сортировки, должен включать ключи сортировки в формате:
+ *       price_asc, price_desc, makes_asc, makes_desc
+ */
+const val PAGE_NUMBER = "page_number"
+const val PAGE_SIZE = "page_size"
+
+const val SORT = "sort"

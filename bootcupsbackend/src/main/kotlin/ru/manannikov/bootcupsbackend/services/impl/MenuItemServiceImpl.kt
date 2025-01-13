@@ -1,17 +1,18 @@
 package ru.manannikov.bootcupsbackend.services.impl
 
-import com.sun.tools.javac.jvm.PoolConstant.LoadableConstant.Long
 import org.apache.logging.log4j.LogManager
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
+import ru.manannikov.bootcupsbackend.exceptions.EntityAlreadyExistsException
 import ru.manannikov.bootcupsbackend.exceptions.NotFoundException
 import ru.manannikov.bootcupsbackend.repos.MenuItemRepo
 import ru.manannikov.bootcupsbackend.repos.specs.Specifications
 import ru.manannikov.bootcupsbackend.services.MenuItemService
+import ru.manannikov.bootcupsbackend.utils.ServiceUtils.tableNameFromEntity
 
 @Transactional(readOnly = true)
 @Service("menuItemService")
@@ -20,17 +21,21 @@ class MenuItemServiceImpl(
 )
     : MenuItemService
 {
-    override fun findById(id: Int): MenuItemEntity = menuItemRepo.findById(id).orElseThrow {
-        NotFoundException(id.toLong(), MenuItemEntity::class.java)
+    override fun findById(id: Int): MenuItemEntity {
+        if (menuItemRepo.count() == 0L) throw NotFoundException(MenuItemEntity::class.java)
+
+        return menuItemRepo.findById(id).orElseThrow {
+            NotFoundException(id.toLong(), MenuItemEntity::class.java)
+        }
     }
 
     override fun findAll(
-        pageRequest: PageRequest,
+        pageRequest: Pageable,
         filter: Map<String, Any>?
     )
         : Page<MenuItemEntity>
     {
-        logger.debug("Получены filter: {}, pageRequest: {}", filter, pageRequest)
+        logger.debug("Получены:\npageRequest: {},\nfilter: {}", pageRequest, filter)
         val menuItems = if (filter != null) {
             menuItemRepo.findAll(
                 Specifications.menuItemDefaultFilter(
@@ -43,13 +48,15 @@ class MenuItemServiceImpl(
                 pageRequest
             )
         }
-        logger.debug("menu items:\n{}", menuItems)
+        logger.debug("Из таблицы menu_items получены следующие записи:\n{}", menuItems)
         return menuItems
     }
 
     @Transactional
     override fun save(menuItemEntity: MenuItemEntity) {
-        if (menuItemEntity.id != null) throw IllegalArgumentException("")
+        if (menuItemEntity.id != null) throw EntityAlreadyExistsException(
+            tableNameFromEntity(MenuItemEntity::class)
+        )
 
         val savedMenuItem = menuItemRepo.save(menuItemEntity)
         logger.debug("Позиция меню успешно создана:\n{}", savedMenuItem)
@@ -72,7 +79,7 @@ class MenuItemServiceImpl(
     override fun deleteById(id: Int) {
         findById(id)
         menuItemRepo.deleteById(id)
-        logger.debug("Позиция меню с идентификатором $id успешно удалена")
+        logger.debug("Позиция меню с идентификатором {} успешно удалена", id)
     }
 
     companion object {

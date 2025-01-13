@@ -19,11 +19,11 @@ import ru.manannikov.bootcupsbackend.config.WebConfig
 import ru.manannikov.bootcupsbackend.services.MenuItemService
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
-import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_NUMBER
-import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PAGE_SIZE
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_NAME
-import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.SORT
-import ru.manannikov.bootcupsbackend.utils.Mapper
+import ru.manannikov.bootcupsbackend.utils.ModelConverter
+import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
+import ru.manannikov.bootcupsbackend.utils.PAGE_SIZE
+import ru.manannikov.bootcupsbackend.utils.SORT
 
 /**
  * Должен тестировать исключительно ответы на запросы при определенных условиях
@@ -33,13 +33,13 @@ import ru.manannikov.bootcupsbackend.utils.Mapper
 @TestPropertySource(
     locations = ["classpath:application.yaml"]
 )
-@SpringJUnitWebConfig(classes = [AppConfig::class, WebConfig::class, Mapper::class])
+@SpringJUnitWebConfig(classes = [AppConfig::class, WebConfig::class, ModelConverter::class])
 class MenuItemControllerUnitTests {
 
     @Mock
     lateinit var menuItemService: MenuItemService
     @Autowired
-    lateinit var mapper: Mapper
+    lateinit var modelConverter: ModelConverter
     @Autowired
     lateinit var messageSource: MessageSource
 
@@ -48,7 +48,7 @@ class MenuItemControllerUnitTests {
     @BeforeEach
     fun setupMockMvc() {
         mockMvc = MockMvcBuilders
-            .standaloneSetup(MenuItemController(menuItemService, mapper))
+            .standaloneSetup(MenuItemController(menuItemService, modelConverter))
             .setControllerAdvice(RestExceptionHandler(messageSource))
             .build()
     }
