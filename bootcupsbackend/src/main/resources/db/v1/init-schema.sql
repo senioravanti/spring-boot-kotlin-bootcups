@@ -1,12 +1,18 @@
 -- Должности сотрудников
 INSERT INTO roles(
-    role_name)
+    role_key,
+    role_name
+)
 VALUES (
-    'BARISTA'),
-(
-    'ADMIN'),
-(
-    'OWNER');
+    'barista',
+    'role-entity.name.barista'
+), (
+    'admin',
+    'role-entity.name.admin'
+), (
+    'owner',
+    'role-entity.name.owner'
+);
 
 -- employess, Сотрудники, базовая таблица
 INSERT INTO employees(
@@ -28,7 +34,7 @@ VALUES (
         FROM
             roles
         WHERE
-            role_name = 'BARISTA'
+            role_key = 'barista'
     ), 
     'Мананников', 'Антон', 'Олегович',
     -- хеш bcypt ф-ции соотв. "raw" паролю: 12345
@@ -39,7 +45,7 @@ VALUES (
         SELECT
             role_id
         FROM roles
-        WHERE role_name = 'BARISTA'
+        WHERE role_key = 'barista'
     ), 
     'Абрамов', 'Максим', 'Алексеевич',
 -- хеш bcypt ф-ции соотв. "raw" паролю: l&u0-ks
@@ -51,7 +57,7 @@ VALUES (
         SELECT
             role_id
         FROM roles
-        WHERE role_name = 'OWNER'
+        WHERE role_key = 'owner'
     ), 
     'Соколов', 'Роман', 'Добрыниевич',
 -- хеш bcypt ф-ции соотв. "raw" паролю: s0kol
@@ -63,7 +69,7 @@ VALUES (
             role_id
         FROM roles
         WHERE
-        role_name = 'ADMIN'
+        role_key = 'admin'
     ), 
     'Шевкун', 'Роман', 'Иванович',
 -- хеш bcypt ф-ции соотв. "raw" паролю: ШевкунРИ
@@ -77,7 +83,7 @@ VALUES (
         FROM
             roles
         WHERE
-            role_name = 'BARISTA'
+            role_key = 'barista'
     ), 
     'Асадов', 'Борис', 'Измаилович',
 -- хеш bcypt ф-ции соотв. "raw" паролю: sys0eye1
@@ -205,41 +211,60 @@ WHERE
 
 -- Категории продуктов
 INSERT INTO categories(
-    category_name)
+    category_key,
+    category_name
+)
 VALUES (
-    'DISHES'),
-(
-    'FIRST_COURSE'),
-(
-    'BREAKFAST'),
-(
-    'SECOND_COURSE'),
-(
-    'SALAD'),
-(
-    'DESSERT'),
-(
-    'SIDE_DISH'),
-(
-    'SANDWICH'),
-(
-    'SOURDOUGH_BREAD'),
-(
-    'BACKING'),
-(
-    'HEALTHY_NUTRITION'),
-(
-    'SEASONAL_MENU'),
-(
-    'DRINKS'),
-(
-    'COFFEE'),
-(
-    'TEA'),
-(
-    'CHICORY_DRINKS'),
-(
-    'COMPOTE'
+    'dishes',
+    'category-entity.fields.name.dishes'
+), (
+    'first_course',
+    'category-entity.fields.name.first-course'
+), (
+    'breakfast',
+    'category-entity.fields.name.breakfast'
+), (
+    'second_course',
+    'category-entity.fields.name.second-course'
+), (
+    'salad',
+    'category-entity.fields.name.salad'
+), (
+    'dessert',
+    'category-entity.fields.name.desser'
+), (
+    'side_dish',
+    'category-entity.fields.name.side-dish'
+), (
+    'sandwich',
+    'category-entity.fields.name.sandwich'
+), (
+    'sourdough_bread',
+    'category-entity.fields.name.sourdough-bread'
+), (
+    'backing',
+    'category-entity.fields.name.backing'
+), (
+    'healthy_nutrition',
+    'category-entity.fields.name.healthy-nutrition'
+), (
+    'seasonal_menu',
+    'category-entity.fields.name.seasonal-menu'
+), (
+    'drinks',
+    'category-entity.fields.name.drinks'
+), (
+    'coffee',
+    'category-entity.fields.name.coffee'
+), (
+    'tea',
+    'category-entity.fields.name.tea'
+), (
+    'chicory_drinks',
+    'category-entity.fields.name.chicory-drinks'
+), (
+    'compote',
+    'category-entity.fields.name.compote'
 );
 
 -- Ассортимент, добавить 25 записей
@@ -301,13 +326,13 @@ VALUES (
     'Капучино',
     'Капучино –– это насыщенный кофейный напиток итальянской кухни на основе экспрессо с добавлением в него подогретого, вспененного паром молока'),
 (
-    'Ассамский TEA',
+    'Ассамский чай',
     'Бодрящий, терпкий черный чай. Выращен в Индии, производится из растения camellia sinensis'),
 (
-    'Зеленый TEA',
+    'Зеленый чай',
     DEFAULT),
 (
-    'Иван-TEA',
+    'Иван-чай',
     DEFAULT),
 (
     'Сырный тост',
@@ -325,104 +350,125 @@ VALUES (
     'Ржано-пшеничный хлеб «Енисей»',
     'Мягкий и ароматный хлеб на закваске'),
 (
-    'COMPOTE',
+    'compote',
     'Компот из ягод –– важнейший элемент правильного питания, поддерживает баланс витаминов в организме, защищает от преждевременного старения.');
 
 -- Категории продуктов
+WITH dishes_category AS (
+    SELECT
+        category_id
+    FROM
+        categories
+    WHERE
+        category_key = 'dishes'
+), second_course_category AS (
+    SELECT
+        category_id
+    FROM 
+        categories
+    WHERE
+        category_key = 'second_course'
+), first_course_category AS (
+    SELECT
+        category_id
+    FROM 
+        categories
+    WHERE
+        category_key = 'first_course'
+), breakfast_category AS (
+    SELECT
+        category_id
+    FROM 
+        categories
+    WHERE
+        category_key = 'breakfast'
+)
 INSERT INTO product_categories(
     product_id,
     category_id)
-VALUES ((
+VALUES (
+    (
         SELECT
             product_id
         FROM
             products
         WHERE
-            product_name = 'Лагман классический'),(
-            SELECT
-                category_id
-            FROM
-                categories
-            WHERE
-                category_name = 'DISHES')),
-((
+            product_name = 'Лагман классический'
+    ),
+    (SELECT category_id FROM dishes_category)
+), (
+    (
         SELECT
             product_id
         FROM products
         WHERE
-            product_name = 'Лагман классический'),(
-        SELECT
-            category_id
-        FROM categories
-    WHERE
-        category_name = 'SECOND_COURSE')),
-((
+            product_name = 'Лагман классический'
+    ),
+    (SELECT category_id FROM second_course_category)
+), (
+    (
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Куриный суп с лапшой'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'DISHES')),
-((
+    product_name = 'Куриный суп с лапшой'),
+    (SELECT category_id FROM dishes_category)
+), (
+    (
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Куриный суп с лапшой'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'FIRST_COURSE')),
-((
+    product_name = 'Куриный суп с лапшой'),
+    (SELECT category_id FROM first_course_category)
+), (
+    (
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Окорочка отварные и обжаренные'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'DISHES')),
-((
+    product_name = 'Окорочка отварные и обжаренные'),
+    (SELECT category_id FROM dishes_category)
+), ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Окорочка отварные и обжаренные'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'FIRST_COURSE')),
-((
+    product_name = 'Окорочка отварные и обжаренные'),
+    (SELECT category_id FROM first_course_category)
+), ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Макароны отварные'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'DISHES')),
-((
+    product_name = 'Макароны отварные'),
+    (SELECT category_id FROM dishes_category)
+), (
+    (
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Макароны отварные'),(
+    product_name = 'Макароны отварные'),
+    (SELECT category_id FROM second_course_category)
+), (
+    (
     SELECT
-        category_id
-    FROM categories
+        product_id
+    FROM products
 WHERE
-    category_name = 'SECOND_COURSE')),
-((
+    product_name = 'Овсяная каша'),
+    (SELECT category_id FROM dishes_category)
+), (
+    (
+    SELECT
+        product_id
+    FROM products
+WHERE
+    product_name = 'Овсяная каша'),
+    (SELECT category_id FROM breakfast_category)
+), (
+    (
     SELECT
         product_id
     FROM products
@@ -432,29 +478,25 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DISHES')),
+    category_key = 'healthy_nutrition')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Овсяная каша'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'BREAKFAST')),
-((
+    product_name = 'Пирог с корицей'),
+    (SELECT category_id FROM dishes_category)
+), ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Овсяная каша'),(
+    product_name = 'Пирог с корицей'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'HEALTHY_NUTRITION')),
+    category_key = 'dessert')),
 ((
     SELECT
         product_id
@@ -465,45 +507,16 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DISHES')),
+    category_key = 'backing')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Пирог с корицей'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'DESSERT')),
-((
-    SELECT
-        product_id
-    FROM products
-WHERE
-    product_name = 'Пирог с корицей'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'BACKING')),
-((
-    SELECT
-        product_id
-    FROM products
-WHERE
-    product_name = 'Цезарь с курицей'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'DISHES'));
-
-INSERT INTO product_categories(
-    product_id,
-    category_id)
-VALUES ((
+    product_name = 'Цезарь с курицей'),
+    (SELECT category_id FROM dishes_category)
+), (
+    (
         SELECT
             product_id
         FROM
@@ -515,19 +528,14 @@ VALUES ((
             FROM
                 categories
             WHERE
-                category_name = 'SALAD')),
-((
+                category_key = 'salad')
+), ((
         SELECT
             product_id
         FROM products
         WHERE
-            product_name = 'Пончик'),(
-        SELECT
-            category_id
-        FROM categories
-    WHERE
-        category_name = 'DISHES')),
-((
+            product_name = 'Пончик'), (SELECT category_id FROM dishes_category)
+), ((
     SELECT
         product_id
     FROM products
@@ -537,7 +545,13 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DESSERT')),
+    category_key = 'dessert')),
+((
+    SELECT
+        product_id
+    FROM products
+WHERE
+    product_name = 'Круассан'),(SELECT category_id FROM dishes_category)),
 ((
     SELECT
         product_id
@@ -548,29 +562,13 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DISHES')),
+    category_key = 'backing')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Круассан'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'BACKING')),
-((
-    SELECT
-        product_id
-    FROM products
-WHERE
-    product_name = 'Клаб-сэндвич с бужениной'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'DISHES')),
+    product_name = 'Клаб-сэндвич с бужениной'),(SELECT category_id FROM dishes_category)),
 ((
     SELECT
         product_id
@@ -581,7 +579,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'SANDWICH')),
+    category_key = 'sandwich')),
 ((
     SELECT
         product_id
@@ -592,7 +590,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
@@ -603,7 +601,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'COFFEE')),
+    category_key = 'coffee')),
 ((
     SELECT
         product_id
@@ -614,7 +612,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
@@ -625,7 +623,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'CHICORY_DRINKS')),
+    category_key = 'chicory_drinks')),
 ((
     SELECT
         product_id
@@ -636,7 +634,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'HEALTHY_NUTRITION')),
+    category_key = 'healthy_nutrition')),
 ((
     SELECT
         product_id
@@ -647,7 +645,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
@@ -658,7 +656,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'COFFEE')),
+    category_key = 'coffee')),
 ((
     SELECT
         product_id
@@ -669,7 +667,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
@@ -680,7 +678,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'COFFEE')),
+    category_key = 'coffee')),
 ((
     SELECT
         product_id
@@ -691,7 +689,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
@@ -702,7 +700,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'COFFEE')),
+    category_key = 'coffee')),
 ((
     SELECT
         product_id
@@ -713,7 +711,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
@@ -724,7 +722,7 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'COFFEE')),
+    category_key = 'coffee')),
 ((
     SELECT
         product_id
@@ -735,120 +733,115 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'SEASONAL_MENU')),
+    category_key = 'seasonal_menu')),
 -- Чаи
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Ассамский TEA'),(
+    product_name = 'Ассамский чай'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Ассамский TEA'),(
+    product_name = 'Ассамский чай'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'TEA')),
+    category_key = 'tea')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Зеленый TEA'),(
+    product_name = 'Зеленый чай'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Зеленый TEA'),(
+    product_name = 'Зеленый чай'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'TEA')),
+    category_key = 'tea')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Иван-TEA'),(
+    product_name = 'Иван-чай'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Иван-TEA'),(
+    product_name = 'Иван-чай'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'TEA')),
+    category_key = 'tea')),
 -- Компоты
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'COMPOTE'),(
+    product_name = 'compote'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'DRINKS')),
+    category_key = 'drinks')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'COMPOTE'),(
+    product_name = 'compote'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'COMPOTE')),
+    category_key = 'compote')),
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'COMPOTE'),(
+    product_name = 'compote'),(
     SELECT
         category_id
     FROM categories
 WHERE
-    category_name = 'HEALTHY_NUTRITION')),
+    category_key = 'healthy_nutrition')),
 -- Прочее
 ((
     SELECT
         product_id
     FROM products
 WHERE
-    product_name = 'Ржано-пшеничный хлеб «Енисей»'),(
-    SELECT
-        category_id
-    FROM categories
-WHERE
-    category_name = 'DISHES')),
+    product_name = 'Ржано-пшеничный хлеб «Енисей»'),(SELECT category_id FROM dishes_category)),
 ((
     SELECT
         product_id
@@ -859,8 +852,8 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'BACKING')),
-((
+    category_key = 'backing')
+), ((
     SELECT
         product_id
     FROM products
@@ -870,8 +863,8 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'HEALTHY_NUTRITION')),
-((
+    category_key = 'healthy_nutrition')
+), ((
     SELECT
         product_id
     FROM products
@@ -881,7 +874,8 @@ WHERE
         category_id
     FROM categories
 WHERE
-    category_name = 'SOURDOUGH_BREAD'));
+    category_key = 'sourdough_bread')
+);
 
 -- VVV
 -- Таблица: Единицы измерения
@@ -914,7 +908,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'COMPOTE'), 230, 25, 'Из замороженной смородины');
+                product_name = 'compote'), 230, 25, 'Из замороженной смородины');
 
 INSERT INTO menu_items(
     unit_id,
@@ -935,7 +929,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'COMPOTE'), 
+                product_name = 'compote'), 
 
         360, 36, 
         'Из замороженной смородины');
@@ -958,7 +952,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'COMPOTE'), 230, 39, 'Из свежих яблок и клюквы');
+                product_name = 'compote'), 230, 39, 'Из свежих яблок и клюквы');
 
 INSERT INTO menu_items(
     unit_id,
@@ -978,7 +972,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'COMPOTE'), 360, 55, 'Из свежих яблок и клюквы');
+                product_name = 'compote'), 360, 55, 'Из свежих яблок и клюквы');
 
 INSERT INTO menu_items(
     unit_id,
@@ -1830,7 +1824,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'Зеленый TEA'), 500, 345, 'С сушеной морковью');
+                product_name = 'Зеленый чай'), 500, 345, 'С сушеной морковью');
 
 INSERT INTO menu_items(
     unit_id,
@@ -1850,7 +1844,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'Зеленый TEA'), 900, 650, 'С сушеной морковью');
+                product_name = 'Зеленый чай'), 900, 650, 'С сушеной морковью');
 
 INSERT INTO menu_items(
     unit_id,
@@ -1870,7 +1864,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'Зеленый TEA'), 900, 750, 'С черной смородиной');
+                product_name = 'Зеленый чай'), 900, 750, 'С черной смородиной');
 
 INSERT INTO menu_items(
     unit_id,
@@ -1890,7 +1884,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'Иван-TEA'), 900, 750, 'С сушеными листьями орешника');
+                product_name = 'Иван-чай'), 900, 750, 'С сушеными листьями орешника');
 
 INSERT INTO menu_items(
     unit_id,
@@ -2220,7 +2214,7 @@ VALUES (
                     FROM
                         products
                     WHERE
-                        product_name = 'COMPOTE')
+                        product_name = 'compote')
                     AND menu_item_topping = 'Из замороженной смородины'
                     AND menu_item_makes = 230),
                 3,(
@@ -2233,7 +2227,7 @@ VALUES (
                             product_id
                         FROM products
                     WHERE
-                        product_name = 'COMPOTE')
+                        product_name = 'compote')
                     AND menu_item_topping = 'Из замороженной смородины'
                     AND menu_item_makes = 230) * 3),
 ((
@@ -2317,7 +2311,7 @@ VALUES ((
                     FROM
                         products
                     WHERE
-                        product_name = 'COMPOTE')
+                        product_name = 'compote')
                     AND menu_item_topping = 'Из свежих яблок и клюквы'
                     AND menu_item_makes = 360),
                 1,(
@@ -2330,7 +2324,7 @@ VALUES ((
                             product_id
                         FROM products
                     WHERE
-                        product_name = 'COMPOTE')
+                        product_name = 'compote')
                     AND menu_item_topping = 'Из свежих яблок и клюквы'
                     AND menu_item_makes = 360) * 1),
 ((
@@ -2513,7 +2507,7 @@ VALUES ((
                     FROM
                         products
                     WHERE
-                        product_name = 'Зеленый TEA')
+                        product_name = 'Зеленый чай')
                     AND menu_item_topping = 'С сушеной морковью'
                     AND menu_item_makes = 500),
                 7,(
@@ -2526,7 +2520,7 @@ VALUES ((
                             product_id
                         FROM products
                     WHERE
-                        product_name = 'Зеленый TEA')
+                        product_name = 'Зеленый чай')
                     AND menu_item_topping = 'С сушеной морковью'
                     AND menu_item_makes = 500) * 7);
 
@@ -2764,7 +2758,7 @@ WHERE
             product_id
         FROM products
     WHERE
-        product_name = 'Иван-TEA')
+        product_name = 'Иван-чай')
 AND menu_item_topping = 'С сушеными листьями орешника'
 AND menu_item_makes = 900), 1,(
     SELECT
@@ -2776,7 +2770,7 @@ WHERE
             product_id
         FROM products
     WHERE
-        product_name = 'Иван-TEA')
+        product_name = 'Иван-чай')
 AND menu_item_topping = 'С сушеными листьями орешника'
 AND menu_item_makes = 900) * 1);
 
@@ -2806,7 +2800,7 @@ VALUES ((
                     FROM
                         products
                     WHERE
-                        product_name = 'Зеленый TEA')
+                        product_name = 'Зеленый чай')
                     AND menu_item_topping = 'С черной смородиной'
                     AND menu_item_makes = 900),
                 1,(
@@ -2819,7 +2813,7 @@ VALUES ((
                             product_id
                         FROM products
                     WHERE
-                        product_name = 'Зеленый TEA')
+                        product_name = 'Зеленый чай')
                     AND menu_item_topping = 'С черной смородиной'
                     AND menu_item_makes = 900) * 1),
 ((
@@ -3284,7 +3278,7 @@ VALUES ((
                     FROM
                         products
                     WHERE
-                        product_name = 'Зеленый TEA')
+                        product_name = 'Зеленый чай')
                     AND menu_item_topping = 'С черной смородиной'
                     AND menu_item_makes = 900),
                 1,(
@@ -3297,7 +3291,7 @@ VALUES ((
                             product_id
                         FROM products
                     WHERE
-                        product_name = 'Зеленый TEA')
+                        product_name = 'Зеленый чай')
                     AND menu_item_topping = 'С черной смородиной'
                     AND menu_item_makes = 900) * 1),
 ((
@@ -3356,7 +3350,7 @@ VALUES ((
                     FROM
                         products
                     WHERE
-                        product_name = 'COMPOTE')
+                        product_name = 'compote')
                     AND menu_item_topping = 'Из свежих яблок и клюквы'
                     AND menu_item_makes = 360),
                 2,(
@@ -3369,7 +3363,7 @@ VALUES ((
                             product_id
                         FROM products
                     WHERE
-                        product_name = 'COMPOTE')
+                        product_name = 'compote')
                     AND menu_item_topping = 'Из свежих яблок и клюквы'
                     AND menu_item_makes = 360) * 2),
 ((

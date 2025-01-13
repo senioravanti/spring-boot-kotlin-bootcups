@@ -5,6 +5,6 @@ spring:
 logging:
 
   level:
-    org.hibernate: DEBUG
+    org.hibernate: WARN
     org.springframework.transaction: TRACE
     org.springframework.orm.jpa: TRACE

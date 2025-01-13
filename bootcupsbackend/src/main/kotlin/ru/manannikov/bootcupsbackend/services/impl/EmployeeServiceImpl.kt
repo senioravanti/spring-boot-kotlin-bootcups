@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import ru.manannikov.bootcupsbackend.entities.EmployeeEntity
-import ru.manannikov.bootcupsbackend.enums.RoleEnum
 import ru.manannikov.bootcupsbackend.exceptions.EntityAlreadyExistsException
 import ru.manannikov.bootcupsbackend.exceptions.NotFoundException
 import ru.manannikov.bootcupsbackend.repos.EmployeeRepo
@@ -26,20 +25,20 @@ class EmployeeServiceImpl(
         if (employeeRepo.count() == 0L) throw NotFoundException(EmployeeEntity::class.java)
 
         return employeeRepo.findById(id).orElseThrow {
-            NotFoundException(id.toLong(), EmployeeEntity::class.java)
+            NotFoundException(id.toString(), EmployeeEntity::class.java)
         }
     }
 
     override fun findAll(
         pageRequest: Pageable,
-        roleName: RoleEnum?
+        filter: Map<String, String>?
     )
         : Page<EmployeeEntity>
     {
-        logger.debug("Получены:\npageRequest: {},\nroleName: {}", pageRequest, roleName)
-        val employees = if (roleName != null) {
+        logger.debug("Получены:\npageRequest: {},\nroleName: {}", pageRequest, filter)
+        val employees = if (filter != null) {
             employeeRepo.findAll(
-                Specifications.employeeRoleFilter(roleName),
+                Specifications.employeeFilter(filter),
                 pageRequest
             )
         } else {

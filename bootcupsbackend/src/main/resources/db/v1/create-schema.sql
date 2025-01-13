@@ -65,9 +65,11 @@ ALTER TABLE client_bonus_cards
 /* table: roles                                                  */
 /*==============================================================*/
 CREATE TABLE roles(
-    role_id smallserial NOT NULL,
-    role_name varchar(32) NOT NULL UNIQUE,
-    CONSTRAINT pk_role PRIMARY KEY (role_id)
+    role_id smallserial PRIMARY KEY,
+    role_key varchar(32) NOT NULL,
+    role_name varchar(128) NOT NULL,
+
+    UNIQUE (role_key, role_name)
 );
 
 -- индекс первичного ключа таблицы roles
@@ -110,7 +112,11 @@ ALTER TABLE employees
 /*==============================================================*/
 CREATE TABLE categories(
     category_id smallserial PRIMARY KEY,
-    category_name varchar(24) NOT NULL UNIQUE
+    
+    category_key varchar(24) NOT NULL UNIQUE,
+    category_name varchar(128) NOT NULL UNIQUE,
+
+    UNIQUE (category_key, category_name)
 );
 
 -- индекс первичного ключа таблицы categories

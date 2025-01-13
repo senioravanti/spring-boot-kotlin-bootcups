@@ -10,7 +10,7 @@ data class OrderDto(
 
     val createdAt: Long,
 
-    val status: FieldEnumDto,
+    val status: String,
 
     val client: ClientDto?,
     val employee: EmployeeDto

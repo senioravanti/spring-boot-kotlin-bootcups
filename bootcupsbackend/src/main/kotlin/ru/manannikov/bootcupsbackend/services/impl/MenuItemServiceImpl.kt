@@ -25,7 +25,7 @@ class MenuItemServiceImpl(
         if (menuItemRepo.count() == 0L) throw NotFoundException(MenuItemEntity::class.java)
 
         return menuItemRepo.findById(id).orElseThrow {
-            NotFoundException(id.toLong(), MenuItemEntity::class.java)
+            NotFoundException(id.toString(), MenuItemEntity::class.java)
         }
     }
 
@@ -57,6 +57,8 @@ class MenuItemServiceImpl(
         if (menuItemEntity.id != null) throw EntityAlreadyExistsException(
             tableNameFromEntity(MenuItemEntity::class)
         )
+
+        if (menuItemEntity.product.id == null || menuItemEntity.unit.id == null) throw IllegalArgumentException("exception.illegal-argument.dependencies.dne")
 
         val savedMenuItem = menuItemRepo.save(menuItemEntity)
         logger.debug("Позиция меню успешно создана:\n{}", savedMenuItem)

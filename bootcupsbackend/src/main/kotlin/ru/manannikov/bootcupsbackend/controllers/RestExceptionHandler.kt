@@ -86,9 +86,8 @@ class RestExceptionHandler(
     )
         : ProblemDetail
     {
-        val args = mutableListOf<Any>(ex.entityClass)
-        ex.entityId ?.let {args.plus(it)}
-        val errorMessage = messageSource.getMessage(ex.message!!, args.toTypedArray(), Locale.getDefault())
+        val args = arrayOf(ex.entityClass, ex.entityId)
+        val errorMessage = messageSource.getMessage(ex.message!!, args, Locale.getDefault())
 
         logger.error("Откат запроса на выборку:\n{}", errorMessage)
         return createProblemDetailForRuntimeException(

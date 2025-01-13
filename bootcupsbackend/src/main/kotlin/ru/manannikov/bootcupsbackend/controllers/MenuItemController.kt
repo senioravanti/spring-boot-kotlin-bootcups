@@ -3,14 +3,12 @@ package ru.manannikov.bootcupsbackend.controllers
 import jakarta.validation.Valid
 import org.apache.logging.log4j.LogManager
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
-import org.springframework.data.domain.Sort.Order
 import org.springframework.util.MultiValueMap
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import ru.manannikov.bootcupsbackend.dto.FieldEnumDto
 import ru.manannikov.bootcupsbackend.dto.MenuItemDto
 import ru.manannikov.bootcupsbackend.dto.PaginationResponse
+import ru.manannikov.bootcupsbackend.enums.FieldEnum
 import ru.manannikov.bootcupsbackend.enums.MenuItemSortFields
 import ru.manannikov.bootcupsbackend.services.MenuItemService
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
@@ -69,14 +67,15 @@ class MenuItemController(
                     if (filter == null)
                         filter = mutableMapOf()
 
-                    filter!![key] = value.map { it.uppercase() }
+                    logger.debug("value:\n{}", value)
+                    filter!![key] = value
                 }
             }
         }
 
         logger.info("page request: {};\nfilter: {}", pageRequest, filter)
 
-        return PaginationResponse.of(
+        return modelConverter.toPaginationResponse(
             menuItemService.findAll(pageRequest, filter),
             MenuItemDto::of
         )
@@ -86,11 +85,7 @@ class MenuItemController(
      * Возвращает ключи сортировки (в нижнем регистре) и их названия
      */
     @GetMapping("/sort-fields")
-    fun sortFields(): List<FieldEnumDto> {
-        return modelConverter.fieldEnumToFieldEnumDto(
-            MenuItemSortFields.entries
-        )
-    }
+    fun sortFields(): List<FieldEnum> = MenuItemSortFields.entries
 
     @GetMapping("/{id}")
     fun findById(

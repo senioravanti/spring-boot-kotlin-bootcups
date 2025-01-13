@@ -10,7 +10,6 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import ru.manannikov.bootcupsbackend.TestcontainersTest
-import ru.manannikov.bootcupsbackend.enums.CategoryEnum
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
 import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
@@ -25,25 +24,23 @@ class MenuItemControllerIntegrationTests : TestcontainersTest() {
 
     /**
      * Jackson по умолчанию при сериализации не меняет регистр с-в dto
+     * Объем должен убывать при равных ценах
      */
     @Test
     @DisplayName("Должен возвращать 1-ю страницу, сод. 2 представления позиций меню, из 6 найденных.")
     fun testFindFindAll() {
         logger.info("Отправляю GET запрос ...")
 
-        val categoriesEnum = arrayOf(CategoryEnum.BREAKFAST, CategoryEnum.BACKING, CategoryEnum.SALAD)
-        val categoriesString = categoriesEnum
-            .map { it.name.lowercase() }
-            .toTypedArray()
+        val categories = arrayOf("breakfast", "backing", "salad")
 
         mockMvc.get("/api/v1/menu/") {
             contextPath = "/api"
 
             param(SORT, "price_asc", "makes_desc")
             param(MENU_ITEM_PRICE_MIN, "100.00")
-            param(CATEGORY, *categoriesString)
+            param(CATEGORY, *categories)
 
-            param(PAGE_SIZE, "2")
+            param(PAGE_SIZE, "4")
             param(PAGE_NUMBER, "1")
         }
         .andDo { print() }
@@ -57,7 +54,7 @@ class MenuItemControllerIntegrationTests : TestcontainersTest() {
                 value(6)
             }
             jsonPath("$.totalPages") {
-                value(3)
+                value(2)
             }
         }
     }

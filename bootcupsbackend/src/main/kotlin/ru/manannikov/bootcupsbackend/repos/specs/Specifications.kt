@@ -7,7 +7,10 @@ import jakarta.persistence.criteria.Root
 import org.apache.logging.log4j.LogManager
 import org.springframework.data.jpa.domain.Specification
 import ru.manannikov.bootcupsbackend.entities.*
-import ru.manannikov.bootcupsbackend.enums.RoleEnum
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.FIRST_NAME
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.LAST_NAME
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.MIDDLE_NAME
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.ROLE_NAME
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MAX
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MIN
@@ -15,6 +18,7 @@ import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITE
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_TOPPING
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_NAME
+import ru.manannikov.bootcupsbackend.utils.ServiceUtils.snakeToCamelCase
 import java.math.BigDecimal
 
 object Specifications {
@@ -109,7 +113,7 @@ object Specifications {
             val categoryRoot = categorySubquery.from(CategoryEntity::class.java)
             categorySubquery
                 .select(categoryRoot.get<Short>("id"))
-                .where(cb.equal(categoryRoot.get<String>("name"), category))
+                .where(cb.equal(categoryRoot.get<String>("key"), category))
 
             val productSubquery = cq.subquery(Short::class.java)
             val productRoot = productSubquery.from(ProductEntity::class.java)
@@ -134,13 +138,30 @@ object Specifications {
     /**
      * Фильтруем сотрудников по занимаемой должности
      */
-    fun employeeRoleFilter(
-        roleName: RoleEnum
+    fun employeeFilter(
+        filter: Map<String, String>
     ): Specification<EmployeeEntity> = Specification {
         root: Root<EmployeeEntity>, cq: CriteriaQuery<*>?, cb: CriteriaBuilder ->
+        var criteria = cb.conjunction()
 
-        val employeesRoleJoin = root.join<EmployeeEntity, RoleEntity>("role")
-        val criteria = cb.equal(employeesRoleJoin.get<String>("name"), roleName.name)
+        filter.forEach {
+            (key, value) ->
+            when (key) {
+                LAST_NAME, FIRST_NAME, MIDDLE_NAME -> {
+                    criteria = cb.and(
+                        criteria,
+                        cb.like(root.get(snakeToCamelCase(key)), "%$value%")
+                    )
+                }
+                ROLE_NAME -> {
+                    val employeesRoleJoin = root.join<EmployeeEntity, RoleEntity>("role")
+                    criteria = cb.and(
+                        criteria,
+                        cb.equal(employeesRoleJoin.get<String>("key"), value)
+                    )
+                }
+            }
+        }
 
         criteria
     }
