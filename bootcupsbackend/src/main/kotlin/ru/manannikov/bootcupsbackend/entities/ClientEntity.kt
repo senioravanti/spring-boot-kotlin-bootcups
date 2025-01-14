@@ -37,8 +37,7 @@ class ClientEntity {
     var registrationState: RegistrationState = RegistrationState.ASK_REGISTRATION
 
     @OneToOne(
-        fetch = FetchType.LAZY,
-        cascade = [CascadeType.PERSIST, CascadeType.REMOVE]
+        cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE]
     )
     @JoinTable(
         name = "client_bonus_cards",

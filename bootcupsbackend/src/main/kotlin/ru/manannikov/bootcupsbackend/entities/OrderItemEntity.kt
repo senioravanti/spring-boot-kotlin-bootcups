@@ -19,7 +19,7 @@ class OrderItemEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "order_id")
-    lateinit var order: OrderEntity
+    lateinit var parentOrder: OrderEntity
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "menu_item_id")
@@ -31,12 +31,12 @@ class OrderItemEntity {
 
         other as OrderItemEntity
         return if (this.id != null) this.id == other.id
-        else this.order == other.order && this.menuItem == other.menuItem && this.purchase == other.purchase && this.quantity == other.quantity
+        else this.parentOrder == other.parentOrder && this.menuItem == other.menuItem && this.purchase == other.purchase && this.quantity == other.quantity
     }
 
-    override fun hashCode(): Int = Objects.hash(order, menuItem, purchase, quantity)
+    override fun hashCode(): Int = Objects.hash(parentOrder, menuItem, purchase, quantity)
 
     override fun toString(): String {
-        return "OrderItem(id=$id, quantity=$quantity, purchase=$purchase, order=$order, menuItem=$menuItem)"
+        return "OrderItem(id=$id, quantity=$quantity, purchase=$purchase, order=$parentOrder, menuItem=$menuItem)"
     }
 }

@@ -88,9 +88,7 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
 
             "anton3baton3@g.cn",
             "+7 900 300 34-34",
-
-            "barista"
-        )
+        ).apply { roleString = "barista" }
 
         val employeeJson = objectWriter.writeValueAsString(employee)
         mockMvc
@@ -157,9 +155,7 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
 
             email = "anton_3@g.cn",
             phoneNumber = employee.phoneNumber,
-
-            role = "barista"
-        )
+        ).apply { roleString = "barista" }
 
         val violations = validator.validate(updatedEmployee)
         logger.debug(violations)

@@ -13,25 +13,23 @@ import ru.manannikov.bootcupsbackend.validation.AskNameGroup
 import ru.manannikov.bootcupsbackend.validation.AskPhoneNumberGroup
 import java.time.LocalDate
 
-class ClientDto {
+class ClientRequest {
     var id: Long? = null
     var chatId: Long? = null
 
     lateinit var registrationState: RegistrationState
 
-    @field:NotBlank(groups = [AskNameGroup::class], message = "messages.validation.client-dto.name")
+    @get:NotBlank(groups = [AskNameGroup::class], message = "messages.validation.client-dto.name")
     var name: String? = null
 
-    @field:NotNull(groups = [AskBirthdateGroup::class])
+    @get:NotNull(groups = [AskBirthdateGroup::class])
     var birthday: LocalDate? = null
 
-    @field:Pattern(regexp = EMAIL_REGEXP, message = "messages.validation.client-dto.email", groups = [AskEmailGroup::class])
+    @get:Pattern(regexp = EMAIL_REGEXP, message = "messages.validation.client-dto.email", groups = [AskEmailGroup::class])
     var email: String? = null
 
-    @field:Pattern(regexp = PHONE_NUMBER_REGEXP, groups = [AskPhoneNumberGroup::class], message = "messages.validation.client-dto.phone-number")
+    @get:Pattern(regexp = PHONE_NUMBER_REGEXP, groups = [AskPhoneNumberGroup::class], message = "messages.validation.client-dto.phone-number")
     var phoneNumber: String? = null
-
-    var bonusCard: BonusCardDto? = null
 
     @AssertTrue(groups = [AskBirthdateGroup::class], message = "messages.validation.client-dto.birthday")
     fun isCapable(): Boolean = birthday!!.isBefore(LocalDate.now().minusYears(14))

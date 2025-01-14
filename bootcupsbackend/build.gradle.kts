@@ -4,6 +4,8 @@ plugins {
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
 	kotlin("plugin.jpa") version "1.9.25"
+
+	kotlin("kapt") version "2.1.0"
 }
 
 group = "ru.manannikov"
@@ -31,6 +33,10 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.liquibase:liquibase-core")
 	runtimeOnly("org.postgresql:postgresql")
+
+	// mapstruct
+	implementation("org.mapstruct:mapstruct:1.6.3")
+	kapt("org.mapstruct:mapstruct-processor:1.6.3")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")

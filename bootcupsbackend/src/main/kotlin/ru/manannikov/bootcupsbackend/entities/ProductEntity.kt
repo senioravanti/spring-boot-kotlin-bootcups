@@ -17,7 +17,7 @@ class ProductEntity {
     @Column(name = "product_description")
     var description: String? = null
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = CategoryEntity::class)
     @JoinTable(
         name = "product_categories",
         joinColumns = [JoinColumn(name = "product_id", nullable = false)],

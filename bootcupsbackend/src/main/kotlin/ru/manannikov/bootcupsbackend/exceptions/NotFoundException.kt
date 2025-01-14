@@ -8,7 +8,7 @@ class NotFoundException : RuntimeException {
     constructor(cls: Class<*>): super("exception.not-found.table") {
         entityClass = cls
     }
-    constructor(id: String, cls: Class<*>): super("exception.not-found.id") {
+    constructor(id: String?, cls: Class<*>): super("exception.not-found.id") {
         entityId = id
         entityClass = cls
     }

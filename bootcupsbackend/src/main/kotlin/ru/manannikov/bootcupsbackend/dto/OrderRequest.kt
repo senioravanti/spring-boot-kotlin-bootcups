@@ -2,7 +2,7 @@ package ru.manannikov.bootcupsbackend.dto
 
 import java.math.BigDecimal
 
-data class OrderDto(
+data class OrderRequest(
     val id: Int?,
 
     val totalAmount: BigDecimal,
@@ -10,8 +10,8 @@ data class OrderDto(
 
     val createdAt: Long,
 
-    val status: String,
+    val statusString: String,
 
-    val client: ClientDto?,
-    val employee: EmployeeDto
+    val clientId: Long?,
+    val employeeId: Int
 )

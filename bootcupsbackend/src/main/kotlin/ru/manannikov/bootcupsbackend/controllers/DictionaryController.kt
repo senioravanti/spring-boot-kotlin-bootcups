@@ -8,7 +8,7 @@ import ru.manannikov.bootcupsbackend.dto.DictionaryDto
 import ru.manannikov.bootcupsbackend.entities.CategoryEntity
 import ru.manannikov.bootcupsbackend.entities.RoleEntity
 import ru.manannikov.bootcupsbackend.services.DictionaryService
-import ru.manannikov.bootcupsbackend.utils.ModelConverter
+import ru.manannikov.bootcupsbackend.utils.MiscellaneousMapper
 
 @RestController
 @RequestMapping("/v1/dictionary")
@@ -18,7 +18,7 @@ class DictionaryController(
     @Qualifier("categoryService")
     private val categoryService: DictionaryService<CategoryEntity>,
 
-    private val modelConverter: ModelConverter
+    private val modelConverter: MiscellaneousMapper
 ) {
     @GetMapping("/roles")
     fun findAllRoles(): List<DictionaryDto> = modelConverter.dictionaryToDto(

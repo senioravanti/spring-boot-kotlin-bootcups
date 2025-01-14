@@ -1,8 +1,7 @@
 package ru.manannikov.bootcupsbackend.dto
 
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Size
-import ru.manannikov.bootcupsbackend.entities.OrderItemEntity
+import jakarta.validation.constraints.Min
 import java.math.BigDecimal
 
 data class OrderItemResponse(
@@ -11,18 +10,9 @@ data class OrderItemResponse(
     val quantity: Short,
     val purchase: BigDecimal,
 
-    @field:Valid
+    @get:Min(1)
+    val orderId: Int,
+
+    @get:Valid
     val menuItem: MenuItemResponse
 )
-{
-    companion object {
-        fun of(orderItemEntity: OrderItemEntity) = OrderItemResponse(
-            id = orderItemEntity.id,
-
-            quantity = orderItemEntity.quantity,
-            purchase = orderItemEntity.purchase,
-
-            menuItem = MenuItemResponse.of(orderItemEntity.menuItem)
-        )
-    }
-}

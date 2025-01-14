@@ -12,13 +12,14 @@ import ru.manannikov.bootcupsbackend.dto.PaginationResponse
 import ru.manannikov.bootcupsbackend.entities.RoleEntity
 import ru.manannikov.bootcupsbackend.enums.EmployeeSortFields
 import ru.manannikov.bootcupsbackend.exceptions.NotFoundException
+import ru.manannikov.bootcupsbackend.mappers.EmployeeMapper
 import ru.manannikov.bootcupsbackend.services.DictionaryService
 import ru.manannikov.bootcupsbackend.services.EmployeeService
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.FIRST_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.LAST_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.MIDDLE_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.ROLE_NAME
-import ru.manannikov.bootcupsbackend.utils.ModelConverter
+import ru.manannikov.bootcupsbackend.utils.MiscellaneousMapper
 import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
 import ru.manannikov.bootcupsbackend.utils.PAGE_SIZE
 import ru.manannikov.bootcupsbackend.utils.SORT
@@ -31,7 +32,9 @@ class EmployeeController(
     private val employeeService: EmployeeService,
     @Qualifier("roleService")
     private val roleService: DictionaryService<RoleEntity>,
-    private val modelConverter: ModelConverter
+
+    private val employeeMapper: EmployeeMapper,
+    private val miscellaneousMapper: MiscellaneousMapper
 ) {
     @GetMapping(path = ["", "/"])
     fun findAll(
@@ -72,21 +75,21 @@ class EmployeeController(
             )
         }
 
-        return modelConverter.toPaginationResponse(
+        return miscellaneousMapper.toPaginationResponse(
             employeeService.findAll(pageRequest, filter),
-            modelConverter::employeeToDto
+            employeeMapper::toDto
         )
     }
 
     @GetMapping("/sort-fields")
-    fun sortFields(): List<FieldEnumDto> = modelConverter.toFieldEnumDto(
+    fun sortFields(): List<FieldEnumDto> = miscellaneousMapper.toFieldEnumDto(
         EmployeeSortFields.entries
     )
 
     @GetMapping("/{id}")
     fun findById(
         @PathVariable("id") id: Int
-    ): EmployeeDto = modelConverter.employeeToDto(
+    ): EmployeeDto = employeeMapper.toDto(
         employeeService.findById(id)
     )
 
@@ -96,7 +99,7 @@ class EmployeeController(
     ) {
         logger.trace("Запрос на регистрацию нового сотрудника:\n{}", employee)
         employeeService.save(
-            modelConverter.employeeToEntity(employee)
+            employeeMapper.toEntity(employee)
         )
     }
 
@@ -108,7 +111,7 @@ class EmployeeController(
         logger.trace("Запрос на обновление данных сотрудника с идентификатором {}:\n{}", id, employee)
         employeeService.update(
             id,
-            modelConverter.employeeToEntity(employee)
+            employeeMapper.toEntity(employee)
         )
     }
 
