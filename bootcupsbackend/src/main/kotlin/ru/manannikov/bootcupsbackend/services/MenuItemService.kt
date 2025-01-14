@@ -4,17 +4,11 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import ru.manannikov.bootcupsbackend.entities.MenuItemEntity
 
-interface MenuItemService {
-    fun findById(id: Int): MenuItemEntity
+interface MenuItemService : CrudService<MenuItemEntity, Int> {
     fun findAll(
         pageRequest: Pageable,
         filter: Map<String, Any>? = null,
     ): Page<MenuItemEntity>
-
-    fun save(menuItemEntity: MenuItemEntity)
-    fun update(id: Int, menuItemEntity: MenuItemEntity)
-
-    fun deleteById(id: Int)
 
     /**
      * Названия параметров запросов, относящихся к пагинации, фильтрации и сортировке позиций меню

@@ -23,7 +23,7 @@ class ProductEntity {
         joinColumns = [JoinColumn(name = "product_id", nullable = false)],
         inverseJoinColumns = [JoinColumn(name = "category_id", nullable = false)]
     )
-    val categories: Set<CategoryEntity> = mutableSetOf()
+    var categories: Set<CategoryEntity> = mutableSetOf()
 
     @OneToMany(mappedBy = "product", cascade = [CascadeType.PERSIST, CascadeType.REMOVE], orphanRemoval = true)
     val menuItems: Set<MenuItemEntity> = mutableSetOf()

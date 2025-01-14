@@ -3,18 +3,55 @@ package ru.manannikov.bootcupsbackend.utils
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.MessageSource
 import org.springframework.data.domain.Page
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import ru.manannikov.bootcupsbackend.dto.*
 import ru.manannikov.bootcupsbackend.entities.*
-import ru.manannikov.bootcupsbackend.services.DictionaryService
+import ru.manannikov.bootcupsbackend.enums.FieldEnum
+import ru.manannikov.bootcupsbackend.services.*
 import java.util.*
 
-@Component("messageUtils")
+@Service("messageUtils")
 class ModelConverter(
+
     @Qualifier("roleService")
     private val roleService: DictionaryService<RoleEntity>,
+
+    private val productService: ProductService,
+    private val unitService: UnitService,
+
+    private val menuItemService: MenuItemService,
+    private val orderService: OrderService,
+
     private val messageSource: MessageSource
 ) {
+
+    fun toFieldEnumDto(fieldEnum: FieldEnum) = FieldEnumDto(
+        key = fieldEnum.fieldKey,
+        name = messageSource.getMessage(fieldEnum.fieldName, null, Locale.getDefault())
+    )
+    fun toFieldEnumDto(fieldEnums: List<FieldEnum>): List<FieldEnumDto> = fieldEnums.map {
+        toFieldEnumDto(it)
+    }
+    /**
+     * menu item dto -> entity и обратно
+     */
+    private fun commonToMenuItemEntity(
+        menuItemDto: MenuItemDto
+    ): MenuItemEntity = MenuItemEntity().apply {
+        id = menuItemDto.id
+
+        makes = menuItemDto.makes
+        price = menuItemDto.price
+
+        topping = menuItemDto.topping
+        imageUri = menuItemDto.imageUri
+    }
+    fun toMenuItemEntity(
+        menuItemRequest: MenuItemRequest,
+    ): MenuItemEntity = commonToMenuItemEntity(menuItemRequest).apply {
+        product = productService.findById(menuItemRequest.productId)
+        unit = unitService.findById(menuItemRequest.unitId)
+    }
 
     /**
      * dictionary dto -> entity и обратно
@@ -80,7 +117,7 @@ class ModelConverter(
         role = roleService.findByKey(employeeDto.role)
     }
 
-    fun oderToDto(orderEntity: OrderEntity) = OrderDto(
+    fun toOrderDto(orderEntity: OrderEntity) = OrderDto(
         id = orderEntity.id,
         totalAmount = orderEntity.totalAmount,
         discountAmount = orderEntity.discountAmount,
@@ -91,6 +128,13 @@ class ModelConverter(
         client = orderEntity.client ?.let { clientToDto(it) },
         employee = employeeToDto(orderEntity.employee)
     )
+    fun toOrderItemEntity(orderItemRequest: OrderItemRequest) = OrderItemEntity().apply {
+        id = orderItemRequest.id
+        quantity = orderItemRequest.quantity
+
+        order = orderService.findById(orderItemRequest.orderId)
+        menuItem = menuItemService.findById(orderItemRequest.menuItemId)
+    }
 
     fun <E, R> toPaginationResponse(entityPage: Page<E>, contentMapper: (E) -> R) = PaginationResponse(
         content = entityPage.content.map { contentMapper.invoke(it) },

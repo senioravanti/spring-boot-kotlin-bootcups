@@ -6,23 +6,26 @@ import ru.manannikov.bootcupsbackend.utils.*
 data class EmployeeDto(
     val id: Int?,
 
-    @Pattern(regexp = LAST_NAME_REGEXP, message = "{employee-entity.last-name.pattern}")
+    @field:Pattern(regexp = LAST_NAME_REGEXP, message = "{employee-entity.last-name.pattern}")
     val lastName: String,
-    @Pattern(regexp = FIRST_NAME_REGEXP, message = "{employee-entity.first-name.pattern}")
+    @field:Pattern(regexp = FIRST_NAME_REGEXP, message = "{employee-entity.first-name.pattern}")
     val firstName: String,
-    @Pattern(regexp = MIDDLE_NAME_REGEXP, message = "{employee-entity.middle-name.pattern}")
+    @field:Pattern(regexp = MIDDLE_NAME_REGEXP, message = "{employee-entity.middle-name.pattern}")
     val middleName: String?,
 
-    @Pattern(regexp = USERNAME_REGEXP, message = "{employee-entity.username.pattern}")
+    @field:Pattern(regexp = USERNAME_REGEXP, message = "{employee-entity.username.pattern}")
     val username: String,
-    @Pattern(regexp = PASSWORD_REGEXP, message = "{employee-entity.password.pattern}")
+    @field:Pattern(regexp = PASSWORD_REGEXP, message = "{employee-entity.password.pattern}")
     val password: String,
 
-    @Pattern(regexp = EMAIL_REGEXP, message = "{employee-entity.email.pattern}")
+    @field:Pattern(regexp = EMAIL_REGEXP, message = "{employee-entity.email.pattern}")
     val email: String,
 
-    @Pattern(regexp = PHONE_NUMBER_REGEXP, message = "{employee-entity.phone-number.pattern}")
+    @field:Pattern(regexp = PHONE_NUMBER_REGEXP, message = "{employee-entity.phone-number.pattern}")
     val phoneNumber: String,
 
+    /**
+     * Если это ответ, то название роли, если запрос, то код роли
+     */
     val role: String
 )

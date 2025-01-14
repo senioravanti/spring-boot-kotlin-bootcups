@@ -6,12 +6,12 @@ import ru.manannikov.bootcupsbackend.entities.UnitEntity
 
 data class UnitDto (
     val id: Short?,
-    @NotBlank
-    @Size(min = 4, max = 32)
+    @field:NotBlank
+    @field:Size(min = 4, max = 32)
     val name: String,
 
-    @NotBlank
-    @Size(min = 1, max = 6)
+    @field:NotBlank
+    @field:Size(min = 1, max = 6)
     val label: String
 ) {
     fun toEntity() = UnitEntity().apply {

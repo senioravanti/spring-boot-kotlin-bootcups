@@ -7,13 +7,16 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import ru.manannikov.bootcupsbackend.dto.EmployeeDto
+import ru.manannikov.bootcupsbackend.dto.FieldEnumDto
 import ru.manannikov.bootcupsbackend.dto.PaginationResponse
 import ru.manannikov.bootcupsbackend.entities.RoleEntity
 import ru.manannikov.bootcupsbackend.enums.EmployeeSortFields
-import ru.manannikov.bootcupsbackend.enums.FieldEnum
 import ru.manannikov.bootcupsbackend.exceptions.NotFoundException
 import ru.manannikov.bootcupsbackend.services.DictionaryService
 import ru.manannikov.bootcupsbackend.services.EmployeeService
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.FIRST_NAME
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.LAST_NAME
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.MIDDLE_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.ROLE_NAME
 import ru.manannikov.bootcupsbackend.utils.ModelConverter
 import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
@@ -36,24 +39,27 @@ class EmployeeController(
         @RequestParam(name = PAGE_SIZE) pageSize: Int,
 
         @RequestParam(name = SORT, required = false) sortCriteria: List<String>?,
-        @RequestParam filter: Map<String, String>?
+        @RequestParam params: Map<String, String>
     ): PaginationResponse<EmployeeDto> {
         var pageRequest = PageRequest.of(pageNumber, pageSize)
 
-        logger.debug("filter: {}", filter)
-        var actualFilter: MutableMap<String, String>? = null
-        filter ?.let {
-            actualFilter = it.toMutableMap()
-            actualFilter!![ROLE_NAME] ?. let {
-                roleKey ->
-                try {
-                    roleService.findByKey(roleKey)
-                } catch (ex: NotFoundException) {
-                    logger.error("Передана несуществующая должность: {}", it)
-                    actualFilter!!.remove(ROLE_NAME)
+        logger.debug("filter: {}", params)
+
+        val filter: MutableMap<String, String> = mutableMapOf()
+        params.forEach { (key, value) ->
+            when (key) {
+                LAST_NAME, FIRST_NAME, MIDDLE_NAME -> {
+                    if (key.isNotBlank())
+                        filter[key] = value
                 }
-                actualFilter!!.remove(PAGE_NUMBER)
-                actualFilter!!.remove(PAGE_SIZE)
+                ROLE_NAME -> {
+                    try {
+                        roleService.findByKey(key)
+                        filter[key] = value
+                    } catch (ex: NotFoundException) {
+                        logger.error("Передана несуществующая должность: {}", key)
+                    }
+                }
             }
         }
 
@@ -67,13 +73,15 @@ class EmployeeController(
         }
 
         return modelConverter.toPaginationResponse(
-            employeeService.findAll(pageRequest, actualFilter),
+            employeeService.findAll(pageRequest, filter),
             modelConverter::employeeToDto
         )
     }
 
     @GetMapping("/sort-fields")
-    fun sortFields(): List<FieldEnum> = EmployeeSortFields.entries
+    fun sortFields(): List<FieldEnumDto> = modelConverter.toFieldEnumDto(
+        EmployeeSortFields.entries
+    )
 
     @GetMapping("/{id}")
     fun findById(

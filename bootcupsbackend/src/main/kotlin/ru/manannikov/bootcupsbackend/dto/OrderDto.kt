@@ -14,4 +14,4 @@ data class OrderDto(
 
     val client: ClientDto?,
     val employee: EmployeeDto
-) {}
+)

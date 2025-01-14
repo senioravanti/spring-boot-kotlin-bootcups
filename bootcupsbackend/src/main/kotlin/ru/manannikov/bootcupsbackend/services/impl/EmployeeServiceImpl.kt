@@ -36,7 +36,7 @@ class EmployeeServiceImpl(
         : Page<EmployeeEntity>
     {
         logger.debug("Получены:\npageRequest: {},\nroleName: {}", pageRequest, filter)
-        val employees = if (filter != null) {
+        val employees = if (!filter.isNullOrEmpty()) {
             employeeRepo.findAll(
                 Specifications.employeeFilter(filter),
                 pageRequest
@@ -51,12 +51,12 @@ class EmployeeServiceImpl(
     }
 
     @Transactional
-    override fun save(employeeEntity: EmployeeEntity) {
-        if (employeeEntity.id != null) throw EntityAlreadyExistsException(
+    override fun save(entity: EmployeeEntity) {
+        if (entity.id != null) throw EntityAlreadyExistsException(
             tableNameFromEntity(EmployeeEntity::class)
         )
 
-        val savedEmployee = employeeRepo.save(employeeEntity)
+        val savedEmployee = employeeRepo.save(entity)
         logger.debug("Сотрудник успешно зарегистрирован:\n{}", savedEmployee)
     }
 
@@ -64,19 +64,19 @@ class EmployeeServiceImpl(
      * Пароль вообще говоря надо шифровать
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    override fun update(id: Int, employeeEntity: EmployeeEntity) {
+    override fun update(id: Int, entity: EmployeeEntity) {
         var existingEmployee = findById(id).apply {
-            lastName = employeeEntity.lastName
-            firstName = employeeEntity.firstName
-            middleName = employeeEntity.middleName
+            lastName = entity.lastName
+            firstName = entity.firstName
+            middleName = entity.middleName
 
-            username = employeeEntity.username
-            password = employeeEntity.password
+            username = entity.username
+            password = entity.password
 
-            email = employeeEntity.email
-            phoneNumber = employeeEntity.phoneNumber
+            email = entity.email
+            phoneNumber = entity.phoneNumber
 
-            role = employeeEntity.role
+            role = entity.role
         }
         existingEmployee = employeeRepo.save(existingEmployee)
         logger.debug("Данные сотрудника c идентификатором {} успешно обновлены:\n{}", id, existingEmployee)

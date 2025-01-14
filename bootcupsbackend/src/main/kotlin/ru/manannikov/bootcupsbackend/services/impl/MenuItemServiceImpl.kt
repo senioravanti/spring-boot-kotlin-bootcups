@@ -21,14 +21,6 @@ class MenuItemServiceImpl(
 )
     : MenuItemService
 {
-    override fun findById(id: Int): MenuItemEntity {
-        if (menuItemRepo.count() == 0L) throw NotFoundException(MenuItemEntity::class.java)
-
-        return menuItemRepo.findById(id).orElseThrow {
-            NotFoundException(id.toString(), MenuItemEntity::class.java)
-        }
-    }
-
     override fun findAll(
         pageRequest: Pageable,
         filter: Map<String, Any>?
@@ -52,29 +44,35 @@ class MenuItemServiceImpl(
         return menuItems
     }
 
+    override fun findById(id: Int): MenuItemEntity {
+        if (menuItemRepo.count() == 0L) throw NotFoundException(MenuItemEntity::class.java)
+
+        return menuItemRepo.findById(id).orElseThrow {
+            NotFoundException(id.toString(), MenuItemEntity::class.java)
+        }
+    }
+
     @Transactional
-    override fun save(menuItemEntity: MenuItemEntity) {
-        if (menuItemEntity.id != null) throw EntityAlreadyExistsException(
+    override fun save(entity: MenuItemEntity) {
+        if (entity.id != null) throw EntityAlreadyExistsException(
             tableNameFromEntity(MenuItemEntity::class)
         )
 
-        if (menuItemEntity.product.id == null || menuItemEntity.unit.id == null) throw IllegalArgumentException("exception.illegal-argument.dependencies.dne")
-
-        val savedMenuItem = menuItemRepo.save(menuItemEntity)
+        val savedMenuItem = menuItemRepo.save(entity)
         logger.debug("Позиция меню успешно создана:\n{}", savedMenuItem)
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    override fun update(id: Int, menuItemEntity: MenuItemEntity) {
+    override fun update(id: Int, entity: MenuItemEntity) {
         var existingMenuItem = findById(id).apply {
-            makes = menuItemEntity.makes
-            topping = menuItemEntity.topping
-            imageUri = menuItemEntity.imageUri
-            product = menuItemEntity.product
-            unit = menuItemEntity.unit
+            makes = entity.makes
+            topping = entity.topping
+            imageUri = entity.imageUri
+            product = entity.product
+            unit = entity.unit
         }
         existingMenuItem = menuItemRepo.save(existingMenuItem)
-        logger.debug("Позиция меню успешно обновлена:\n{}", existingMenuItem)
+        logger.debug("Позиция меню с идентификатором {} успешно обновлена:\n{}", id, existingMenuItem)
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

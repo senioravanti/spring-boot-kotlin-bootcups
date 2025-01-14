@@ -6,9 +6,11 @@ import ru.manannikov.bootcupsbackend.entities.ProductEntity
 
 data class ProductDto(
     val id: Short?,
-    @NotBlank(message = "{product-entity.name.not-blank}")
-    @Size(min = 3, max = 512, message = "{product-entity.name.size}")
+
+    @field:NotBlank(message = "{product-entity.name.not-blank}")
+    @field:Size(min = 3, max = 512, message = "{product-entity.name.size}")
     val name: String,
+
     val description: String?
 ) {
     fun toEntity() = ProductEntity().apply{

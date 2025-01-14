@@ -19,12 +19,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
 import ru.manannikov.bootcupsbackend.config.AppConfig
 import ru.manannikov.bootcupsbackend.config.WebConfig
-import ru.manannikov.bootcupsbackend.dto.MenuItemDto
+import ru.manannikov.bootcupsbackend.dto.MenuItemRequest
+import ru.manannikov.bootcupsbackend.dto.MenuItemResponse
 import ru.manannikov.bootcupsbackend.dto.ProductDto
 import ru.manannikov.bootcupsbackend.dto.UnitDto
 import ru.manannikov.bootcupsbackend.entities.RoleEntity
-import ru.manannikov.bootcupsbackend.services.DictionaryService
-import ru.manannikov.bootcupsbackend.services.MenuItemService
+import ru.manannikov.bootcupsbackend.services.*
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_NAME
@@ -32,6 +32,7 @@ import ru.manannikov.bootcupsbackend.utils.ModelConverter
 import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
 import ru.manannikov.bootcupsbackend.utils.PAGE_SIZE
 import ru.manannikov.bootcupsbackend.utils.SORT
+import java.awt.SystemColor.menu
 import java.math.BigDecimal
 
 /**
@@ -48,7 +49,14 @@ class MenuItemControllerUnitTests {
     @Mock
     lateinit var menuItemService: MenuItemService
     @Mock
+    lateinit var orderService: OrderService
+
+    @Mock
     lateinit var dictionaryService: DictionaryService<RoleEntity>
+    @Mock
+    lateinit var productService: ProductService
+    @Mock
+    lateinit var unitService: UnitService
 
     @Autowired
     lateinit var messageSource: MessageSource
@@ -61,7 +69,7 @@ class MenuItemControllerUnitTests {
             .standaloneSetup(
                 MenuItemController(
                     menuItemService,
-                    ModelConverter(dictionaryService, messageSource)
+                    ModelConverter(dictionaryService, productService, unitService, menuItemService, orderService, messageSource)
                 )
             )
             .setControllerAdvice(RestExceptionHandler(messageSource))
@@ -91,8 +99,9 @@ class MenuItemControllerUnitTests {
 
     @Test
     fun testCreateInvalidMenuItem() {
+        logger.info("Тестирую валидацию")
         val objectMapper = ObjectMapper()
-        val invalidMenuItem = MenuItemDto(
+        val invalidMenuItem = MenuItemRequest(
             null,
 
             makes = 0,
@@ -100,16 +109,8 @@ class MenuItemControllerUnitTests {
             topping = null,
             imageUri = null,
 
-            product = ProductDto(
-                id = 1,
-                name = "Лагман классический",
-                description = "Это сытное, богатое вкусами блюдо, которое и насыщает, и согревает"
-            ),
-            unit = UnitDto(
-                id = 1,
-                name = "Грамм",
-                label = "г"
-            )
+            productId = 1,
+            unitId = 1
         )
 
         mockMvc.post("/v1/menu/") {
@@ -119,7 +120,7 @@ class MenuItemControllerUnitTests {
             .andDo { print() }
             .andExpect {
                 status { isBadRequest() }
-                content { contentType(MediaType.APPLICATION_JSON) }
+                content { contentType(MediaType.APPLICATION_PROBLEM_JSON) }
             }
     }
 
