@@ -1,19 +1,18 @@
 import axios from 'axios'
 
-const API_BASE_URL = "http://127.0.0.1:8012";
+const API_BASE_URL = "http://localhost:8001";
 
 export default class RestClient {
-    async allSingers() {
-        const url = API_BASE_URL + '/api/v1/singer/';
+    async findAllMenuItems(pageNumber, pageSize) {
+        const url = API_BASE_URL + '/api/v1/menu/';
         try {
             const response = await axios.get(
-                url,
+                `${url}?page_number=${pageNumber}&page_size=${pageSize}`,
                 {
                     responseType: 'json'
                 }
             );
-            console.log('Ответ сервера:\n');
-            console.log(response);
+            console.log('Ответ сервера:', response);
             return response;
         } catch (error) {
             console.log('Произошла ошибка при отправке запроса:\n' + error);

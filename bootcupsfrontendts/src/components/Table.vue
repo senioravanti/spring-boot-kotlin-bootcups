@@ -1,18 +1,22 @@
-<script>
+<script lang="ts">
 import RestClient from '../services/RestClient';
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: '',
+  props: {
+  },
   data() {
     // Возвращает реактивный объект, который можно использовать в шаблоне и методах
     return {
+      restClient: new RestClient(),
       restData: []
     }
   },
   methods: {
     loadDataFromBackend() {
-      new RestClient().allSingers()
+      this.restClient.findAllMenuItems(0, 10)
         .then(response => {
-          console.log('response:\n', response.data);
           this.restData = response.data || []; 
           console.log('rest data:\n', this.restData);
           response.data;  
@@ -21,50 +25,38 @@ export default {
     }
   },
   computed: {
-    oldestSinger() {
-      if (this.restData.length === 0) {
-        console.log('В массиве restData отсутствуют объекты');
-        return null;
-      }
-
-      return this.restData.reduce((oldestSinger, currentSinger) => {
-        const oldestSingerBirthDate = new Date(oldestSinger['birth_date']);
-        const currentSingerBirthDate = new Date(currentSinger['birth_date']);
-
-        return currentSingerBirthDate.getTime() < oldestSingerBirthDate.getTime() 
-          ? currentSinger 
-          : oldestSinger
-        ;
-      });
-
-      
-    }
+    
   },
-  created() {
+  mounted() {
     this.loadDataFromBackend();
   }
-}
+})
 </script>
 
 <template>
   <div class="container container-table">
-    <h3>Данные, полученные от сервера</h3>  
+    <h3>Меню</h3>  
     <table>
       <thead>
         <tr>
           <th>№</th>
-          <th>Имя</th>
-          <th>Фамилия</th>
-          <th>Дата рождения</th>
+          <th>Название</th>
+          <th>Выход порции</th>
+          <th>Цена</th>
         </tr>
       </thead>
       <tbody>
         <!-- <tr></tr> -->
-        <tr v-for="data in restData" v-bind:key = "data.singer_id">
-          <td>{{ data.singer_id }}</td>
-          <td>{{ data.first_name }}</td>
-          <td>{{ data.last_name }}</td>
-          <td>{{ new Date(Date.parse(data.birth_date)).toLocaleDateString('ru-RU') }}</td>
+        <tr v-for="data in restData.content" v-bind:key = "data.id">
+          <td>{{ data.id }}</td>
+          <td class="align-left">{{ 
+          
+          `${data.product.name.trimEnd()} ${data.topping == null ? '' : data.topping.toLowerCase()}` 
+          
+          }}</td>
+          <td>{{ `${data.makes} ${data.unit.label}.` }}</td>
+          <td>{{ data.price }}</td>
+          <!-- <td>{{ new Date(Date.parse(data.birth_date)).toLocaleDateString('ru-RU') }}</td> -->
         </tr>
       </tbody>
       <tfoot>
@@ -83,32 +75,26 @@ export default {
       </tfoot>
     </table>
   </div>
+  <div class="container paging">
+    <a class="page-link" href="#">1</a>
+    <a class="page-link" href="#">2</a>
+    <a class="page-link" href="#">3</a>
+  </div>
 </template>
 
-<style>
-  .container-table {
-    margin-top: 1rem;
+<style lang="scss">
+.paging {
+  
+  margin-top: 2rem;
+  justify-content: center;
 
-    flex-direction: column;
-    justify-content: center;
-    gap: 1.5rem;
+  & .page-link {
+    color: var(--color-header-background);
+
+    border: 1px solid var(--color-header-background);
+    padding: .25rem .75rem .25rem .75rem;
+
+    margin-left: -1px;
   }
-
-  table {
-    border-collapse: collapse;
-  }
-
-  th, td {
-    border: 1px solid;
-
-    padding: .5rem 1rem;
-  }
-
-  th {
-    font-weight: 700;
-  }
-
-  td {
-    text-align: center;
-  }
+}
 </style>

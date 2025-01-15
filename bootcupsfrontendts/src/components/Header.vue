@@ -1,19 +1,18 @@
-<script setup>
-export default {
-  setup() {},
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  props: {
+    msg: { type: String, required: true },
+    brandName: { type: String, required: true }
+  },
   data() {
     return {};
   },
-};
-defineProps({
-  msg: {
-    type: String,
-    required: true,
-  },
-  brandName: {
-    type: String,
-    required: true,
-  },
+  mounted() {
+    this.brandName
+    this.msg
+  }
 });
 </script>
 
@@ -33,6 +32,19 @@ defineProps({
         {{ brandName }}
       </h3>
     </a>
+    <div class="container nav-links">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Меню</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Очередь заказов</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Сотрудники</a>
+          </li>
+        </ul>
+    </div>
   </div>
 </template>
 
@@ -56,6 +68,10 @@ h3 {
   --stroke-color: var(--color-background);
 }
 
+.navbar {
+  justify-content: space-between;
+}
+
 .container-logo {
   gap: 1rem;
 
@@ -68,6 +84,13 @@ h3 {
       --stroke-color: var(--color-primary);
     }
   }
+}
+
+.nav {
+  padding: 0;
+  list-style: none; 
+  display: inline-flex;
+  gap: 1rem; 
 }
 
 @media (min-width: 1024px) {

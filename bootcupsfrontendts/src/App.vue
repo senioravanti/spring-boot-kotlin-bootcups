@@ -13,8 +13,8 @@ import Table from './components/Table.vue'
       </div>
     </header>
 
-    <main>
-      <!-- <Table/> -->
+    <main class="container">
+      <Table/>
     </main>
   </div>
 

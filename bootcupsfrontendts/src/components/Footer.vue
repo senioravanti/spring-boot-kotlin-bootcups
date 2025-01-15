@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
 import icons from "../assets/icons.svg";
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   setup() {},
   data() {
     return {
@@ -23,7 +25,7 @@ export default {
       ],
     };
   },
-};
+});
 </script>
 <template>
   <div class="container footer">

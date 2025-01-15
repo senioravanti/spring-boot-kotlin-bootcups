@@ -1,5 +1,7 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
+  font-size: 16px;
+
   /* Цветовая палитра */
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
@@ -73,6 +75,7 @@ body {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
+    
   transition:
     color 0.5s,
     background-color 0.5s;
@@ -88,11 +91,20 @@ body {
     Cantarell,
     'Helvetica Neue',
     sans-serif;
-  font-size: 16px;
   text-rendering: optimizeLegibility;
   
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  padding-top: 1.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-bottom: 2.5rem;
+
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .content {
