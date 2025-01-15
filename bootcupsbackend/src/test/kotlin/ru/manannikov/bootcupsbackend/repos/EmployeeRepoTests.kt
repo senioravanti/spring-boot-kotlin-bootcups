@@ -8,9 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import ru.manannikov.bootcupsbackend.TestcontainersTest
 import ru.manannikov.bootcupsbackend.mappers.EmployeeMapper
 import ru.manannikov.bootcupsbackend.repos.specs.Specifications
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.FIRST_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.LAST_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.MIDDLE_NAME
+import ru.manannikov.bootcupsbackend.utils.EMPLOYEE_FIRST_NAME
+import ru.manannikov.bootcupsbackend.utils.EMPLOYEE_LAST_NAME
+import ru.manannikov.bootcupsbackend.utils.EMPLOYEE_MIDDLE_NAME
 
 @SpringBootTest
 class EmployeeRepoTests : TestcontainersTest() {
@@ -25,9 +25,9 @@ class EmployeeRepoTests : TestcontainersTest() {
         val employee1 = employeeRepo.findAll(
             Specifications.employeeFilter(
                 mapOf(
-                    LAST_NAME to "Мананников",
-                    FIRST_NAME to "Антон",
-                    MIDDLE_NAME to "Олегович"
+                    EMPLOYEE_LAST_NAME to "Мананников",
+                    EMPLOYEE_FIRST_NAME to "Антон",
+                    EMPLOYEE_MIDDLE_NAME to "Олегович"
                 )
             )
         ).first()

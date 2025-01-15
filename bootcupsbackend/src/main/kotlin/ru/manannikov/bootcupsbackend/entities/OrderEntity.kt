@@ -34,7 +34,7 @@ class OrderEntity {
     @JoinColumn(name = "employee_id")
     lateinit var employee: EmployeeEntity
 
-    @OneToMany(mappedBy = "parentOrder", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    @OneToMany(mappedBy = "parentOrder", fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE], orphanRemoval = true)
     val orderItems: Set<OrderItemEntity> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {

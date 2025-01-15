@@ -4,6 +4,7 @@ import jakarta.persistence.Table
 import org.apache.logging.log4j.LogManager
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Order
+import ru.manannikov.bootcupsbackend.enums.OrderStatus
 import kotlin.reflect.KClass
 
 object ServiceUtils {
@@ -17,6 +18,8 @@ object ServiceUtils {
     fun snakeToCamelCase(snakeCase: String) = snakeRegex.replace(preflightRegex.replace(snakeCase, "")) {
         it.value.replace("_", "").uppercase()
     }
+
+    fun stringToOrderStatus(statusString: String) = OrderStatus.valueOf(statusString.uppercase())
 
     /**
      * Названия ключей, передаваемых в контроллер -> в snake case;

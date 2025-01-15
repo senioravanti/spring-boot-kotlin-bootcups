@@ -16,14 +16,8 @@ import ru.manannikov.bootcupsbackend.exceptions.NotFoundException
 import ru.manannikov.bootcupsbackend.mappers.EmployeeMapper
 import ru.manannikov.bootcupsbackend.services.DictionaryService
 import ru.manannikov.bootcupsbackend.services.EmployeeService
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.FIRST_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.LAST_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.MIDDLE_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.EMPLOYEE_ROLE_NAME
-import ru.manannikov.bootcupsbackend.utils.MiscellaneousMapper
-import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
-import ru.manannikov.bootcupsbackend.utils.PAGE_SIZE
-import ru.manannikov.bootcupsbackend.utils.SORT
+import ru.manannikov.bootcupsbackend.utils.*
 import ru.manannikov.bootcupsbackend.utils.ServiceUtils.sortFromSortCriteria
 
 @Validated
@@ -47,14 +41,26 @@ class EmployeeController(
     ): PaginationResponse<EmployeeResponse> {
         var pageRequest = PageRequest.of(pageNumber, pageSize)
 
-        logger.debug("filter: {}", params)
+        logger.debug("sort criteria: {}", sortCriteria)
+        sortCriteria ?.let {
+            pageRequest = pageRequest.withSort(
+                sortFromSortCriteria(
+                    it,
+                    EmployeeSortFields.entries.map { it.fieldKey }
+                )
+            )
+        }
 
+        logger.debug("filter: {}", params)
         val filter: MutableMap<String, String> = mutableMapOf()
         params.forEach { (key, value) ->
             when (key) {
-                LAST_NAME, FIRST_NAME, MIDDLE_NAME -> {
-                    if (key.isNotBlank())
+                EMPLOYEE_LAST_NAME, EMPLOYEE_FIRST_NAME, EMPLOYEE_MIDDLE_NAME -> {
+                    if (key.isNotBlank()) {
                         filter[key] = value
+                    } else {
+                        logger.debug("Заданы пустые фамилия, имя или отчество")
+                    }
                 }
                 EMPLOYEE_ROLE_NAME -> {
                     try {
@@ -65,15 +71,6 @@ class EmployeeController(
                     }
                 }
             }
-        }
-
-        sortCriteria ?.let {
-            pageRequest = pageRequest.withSort(
-                sortFromSortCriteria(
-                    it,
-                    EmployeeSortFields.entries.map { it.fieldKey }
-                )
-            )
         }
 
         return miscellaneousMapper.toPaginationResponse(

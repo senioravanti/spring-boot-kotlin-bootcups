@@ -30,9 +30,7 @@ class MenuItemServiceImpl(
         logger.debug("Получены:\npageRequest: {},\nfilter: {}", pageRequest, filter)
         val menuItems = if (filter != null) {
             menuItemRepo.findAll(
-                Specifications.menuItemDefaultFilter(
-                    filter
-                ),
+                Specifications.menuItemDefaultFilter(filter),
                 pageRequest
             )
         } else {

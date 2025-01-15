@@ -22,13 +22,9 @@ import org.springframework.test.web.servlet.put
 import ru.manannikov.bootcupsbackend.TestcontainersTest
 import ru.manannikov.bootcupsbackend.dto.EmployeeRequest
 import ru.manannikov.bootcupsbackend.dto.PaginationResponse
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.FIRST_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.LAST_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.MIDDLE_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.EMPLOYEE_ROLE_NAME
-import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
-import ru.manannikov.bootcupsbackend.utils.PAGE_SIZE
-import ru.manannikov.bootcupsbackend.utils.SORT
+import ru.manannikov.bootcupsbackend.utils.*
+
 import kotlin.test.assertNotEquals
 
 @AutoConfigureMockMvc(print = MockMvcPrint.LOG_DEBUG)
@@ -59,7 +55,7 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
                 param(PAGE_SIZE, "3")
                 param(PAGE_NUMBER, "0")
 
-                param(FIRST_NAME, "Рома")
+                param(EMPLOYEE_FIRST_NAME, "Рома")
                 param(EMPLOYEE_ROLE_NAME, "BEBRUS")
 
                 param(SORT, "first_name_desc", "last_name_asc")
@@ -127,9 +123,9 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
                 param(PAGE_SIZE, "1")
                 param(PAGE_NUMBER, "0")
 
-                param(LAST_NAME, "Соколов")
-                param(FIRST_NAME, "Роман")
-                param(MIDDLE_NAME, "Добрыниевич")
+                param(EMPLOYEE_LAST_NAME, "Соколов")
+                param(EMPLOYEE_FIRST_NAME, "Роман")
+                param(EMPLOYEE_MIDDLE_NAME, "Добрыниевич")
             }
             .andDo { print() }
             .andExpect {

@@ -10,6 +10,7 @@ import ru.manannikov.bootcupsbackend.services.ClientService
 import ru.manannikov.bootcupsbackend.services.EmployeeService
 import ru.manannikov.bootcupsbackend.services.OrderItemService
 import ru.manannikov.bootcupsbackend.utils.MiscellaneousMapper
+import ru.manannikov.bootcupsbackend.utils.ServiceUtils.stringToOrderStatus
 import java.time.Instant
 
 abstract class OrderMapperDecorator : OrderMapper {
@@ -31,7 +32,7 @@ abstract class OrderMapperDecorator : OrderMapper {
         orderItemCount = orderItemService.countByOrderId(order.id!!)
     }
     override fun toEntity(order: OrderRequest): OrderEntity = delegate.toEntity(order).apply {
-        status = OrderStatus.valueOf(order.statusString.uppercase())
+        status = stringToOrderStatus(order.statusString)
 
         client = order.clientId ?.let {
             clientService.findById(it)

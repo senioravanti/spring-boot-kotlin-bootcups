@@ -1,12 +1,10 @@
 package ru.manannikov.bootcupsbackend.repos.specs
 
-import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
-import jakarta.persistence.criteria.Predicate
-import jakarta.persistence.criteria.Root
+import jakarta.persistence.criteria.*
 import org.apache.logging.log4j.LogManager
 import org.springframework.data.jpa.domain.Specification
 import ru.manannikov.bootcupsbackend.entities.*
+import ru.manannikov.bootcupsbackend.enums.OrderStatus
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.EMPLOYEE_ROLE_NAME
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MAX
@@ -19,10 +17,12 @@ import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_AMOUN
 import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_AMOUNT_MIN
 import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_CREATED_AFTER
 import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_CREATED_BEFORE
+import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_STATUS
 import ru.manannikov.bootcupsbackend.utils.*
 import ru.manannikov.bootcupsbackend.utils.ServiceUtils.snakeToCamelCase
-import sun.jvm.hotspot.oops.CellTypeState.value
+import ru.manannikov.bootcupsbackend.utils.ServiceUtils.stringToOrderStatus
 import java.math.BigDecimal
+import java.time.Instant
 
 object Specifications {
     private val logger = LogManager.getLogger(Specifications::class.java)
@@ -94,7 +94,7 @@ object Specifications {
             } catch (ex: IllegalArgumentException) {
                 logger.error(ex)
             } catch (ex: NumberFormatException) {
-                logger.error("Ошибка при преобразовании строки в BigDecimal, вещественное число должно содержать точку, а не запятую:\n{}", ex.toString())
+                logNumberFormatExceptionError(ex)
             }
         }
 
@@ -176,48 +176,119 @@ object Specifications {
 
         filter.forEach {
             (key, value) ->
-            when (key) {
-                EMPLOYEE_LAST_NAME, EMPLOYEE_FIRST_NAME, EMPLOYEE_MIDDLE_NAME -> {
-                    val orderEmployeeJoin = root.join<OrderEntity, EmployeeEntity>("employee")
-                    criteria = cb.and(
-                        criteria,
-                        cb.like(orderEmployeeJoin.get(snakeToCamelCase(key)), "%$value%")
-                    )
-                }
-                EMPLOYEE_EMAIL -> {
-                    val orderEmployeeJoin = root.join<OrderEntity, EmployeeEntity>("employee")
-                    criteria = cb.and(
-                        criteria,
-                        cb.equal(
-                            orderEmployeeJoin.get<String>(
-                                snakeToCamelCase(key.substringAfter("_"))
-                            ),
-                            value)
-                    )
-                }
-                CLIENT_NAME -> {
+            try {
+                when (key) {
+                    ORDER_STATUS -> {
+                        val orderStatus = stringToOrderStatus(value)
+                        criteria = cb.and(
+                            criteria,
+                            cb.equal(root.get<OrderStatus>("status"), orderStatus)
+                        )
+                    }
+                    EMPLOYEE_LAST_NAME, EMPLOYEE_FIRST_NAME, EMPLOYEE_MIDDLE_NAME -> {
+                        val orderEmployeeJoin = root.join<OrderEntity, EmployeeEntity>("employee")
+                        criteria = cb.and(
+                            criteria,
+                            cb.like(orderEmployeeJoin.get(snakeToCamelCase(key)), "%$value%")
+                        )
+                    }
+                    EMPLOYEE_EMAIL -> {
+                        val orderEmployeeJoin = root.join<OrderEntity, EmployeeEntity>("employee")
+                        criteria = cb.and(
+                            criteria,
+                            cb.equal(
+                                orderEmployeeJoin.get<String>(
+                                    key.substringAfter("_")
+                                ),
+                                value)
+                        )
+                    }
+                    CLIENT_NAME -> {
+                        var namePredicate: Predicate? = null
+                        if (value.isBlank() || value == "null" || value == CLIENT_ANONYMOUS) {
+                            namePredicate = cb.isNull(root.get<ClientEntity>("client"))
+                        } else {
+                            val clientEmployeeJoin = root.join<OrderEntity, ClientEntity>("client", JoinType.LEFT)
+                            namePredicate = cb.like(clientEmployeeJoin.get(key), "%$value%")
+                        }
+                        criteria = cb.and(
+                            criteria,
+                            namePredicate
+                        )
+                    }
+                    CLIENT_EMAIL -> {
+                        val clientEmployeeJoin = root.join<OrderEntity, ClientEntity>("client", JoinType.LEFT)
+                        criteria = cb.and(
+                            criteria,
+                            cb.equal(
+                                clientEmployeeJoin.get<String>(
+                                    key.substringAfter("_")
+                                ),
+                                value)
+                        )
+                    }
+                    ORDER_AMOUNT_MAX -> {
+                        val desiredAmount = BigDecimal(value)
 
-                }
-                CLIENT_EMAIL -> {
+                        criteria = cb.and(
+                            criteria,
+                            cb.lessThanOrEqualTo(
+                                computeOrderAmount(root, cb),
+                                desiredAmount
+                            )
+                        )
+                    }
+                    ORDER_AMOUNT_MIN -> {
+                        val desiredAmount = BigDecimal(value)
 
+                        criteria = cb.and(
+                            criteria,
+                            cb.greaterThanOrEqualTo(
+                                computeOrderAmount(root, cb),
+                                desiredAmount
+                            )
+                        )
+                    }
+                    ORDER_CREATED_BEFORE -> {
+                        val beforeInstant = Instant.ofEpochSecond(value.toLong())
+                        criteria = cb.and(
+                            criteria,
+                            cb.lessThanOrEqualTo(
+                                root.get<Instant>("createdAt"),
+                                beforeInstant
+                            )
+                        )
+                    }
+                    ORDER_CREATED_AFTER -> {
+                        val afterInstant = Instant.ofEpochSecond(value.toLong())
+                        criteria = cb.and(
+                            criteria,
+                            cb.greaterThanOrEqualTo(
+                                root.get<Instant>("createdAt"),
+                                afterInstant
+                            )
+                        )
+                    }
                 }
-                ORDER_AMOUNT_MAX -> {
-
-                }
-                ORDER_AMOUNT_MIN -> {
-
-                }
-                ORDER_CREATED_BEFORE -> {
-
-                }
-                ORDER_CREATED_AFTER -> {
-
-                }
+            } catch (ex: NumberFormatException) {
+                logNumberFormatExceptionError(ex)
             }
+
         }
 
         criteria
     }
 
+    private fun computeOrderAmount(
+        root: Root<OrderEntity>,
+        cb: CriteriaBuilder
+    ): Expression<BigDecimal> {
+        val totalAmount = root.get<BigDecimal>("totalAmount")
+        val discountAmount = root.get<BigDecimal>("discountAmount")
+        return cb.diff(totalAmount, discountAmount)
+    }
     private fun createErrorMessage(fieldName: String, typeName: String = "String"): String = "Поле \"$fieldName\" должно иметь тип $typeName"
+    private fun logNumberFormatExceptionError(ex: RuntimeException) {
+        logger.error("Ошибка при преобразовании строки в числовой тип, например, Long или BigDecimal:\n{}", ex.toString())
+    }
 }

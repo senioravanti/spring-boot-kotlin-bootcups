@@ -1,7 +1,6 @@
 package ru.manannikov.bootcupsbackend.dto
 
 import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.Size
 import org.hibernate.validator.constraints.Range
 
 data class OrderItemRequest(
