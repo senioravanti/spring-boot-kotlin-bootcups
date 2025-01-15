@@ -16,3 +16,6 @@ spring:
     password: 147258
     hikari:
       maximum-pool-size: 25
+
+app:
+  frontend-origin: 'http://localhost:5173'

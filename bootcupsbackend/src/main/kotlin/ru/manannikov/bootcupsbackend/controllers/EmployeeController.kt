@@ -4,6 +4,7 @@ import jakarta.validation.Valid
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import ru.manannikov.bootcupsbackend.dto.EmployeeRequest
@@ -59,7 +60,7 @@ class EmployeeController(
                     if (key.isNotBlank()) {
                         filter[key] = value
                     } else {
-                        logger.debug("Заданы пустые фамилия, имя или отчество")
+                        logger.warn("Задано пустое значение одного из фильтров:\nkey: {}, value: {}", key, value)
                     }
                 }
                 EMPLOYEE_ROLE_NAME -> {
@@ -92,6 +93,7 @@ class EmployeeController(
     )
 
     @PostMapping(path = ["", "/"])
+    @ResponseStatus(HttpStatus.CREATED)
     fun create(
        @Valid @RequestBody employee: EmployeeRequest
     ) {

@@ -39,7 +39,7 @@ class MenuItemRepoTests : TestcontainersTest() {
     fun testFindAll() {
         logger.info("Выборка всех позиций меню из таблицы menu_items")
         val menuItems = menuItemRepo.findAll()
-        logger.info(listMenuItems(menuItems))
+        logger.info(listEntities(menuItems))
         assertEquals(57, menuItems.size)
     }
 
@@ -57,7 +57,7 @@ class MenuItemRepoTests : TestcontainersTest() {
             ),
             Sort.by(Order(Direction.ASC, "makes"))
         )
-        logger.info(listMenuItems(menuItems))
+        logger.info(listEntities(menuItems))
         assertEquals(1, menuItems.size)
     }
 
@@ -73,7 +73,7 @@ class MenuItemRepoTests : TestcontainersTest() {
             ),
             Sort.by(Order(Direction.ASC, "price"), Order(Direction.ASC, "makes"))
         )
-        logger.info(listMenuItems(menuItems))
+        logger.info(listEntities(menuItems))
         logger.info(menuItems.size)
         assertEquals(2, menuItems.size)
     }
@@ -88,7 +88,7 @@ class MenuItemRepoTests : TestcontainersTest() {
         val pageCount = ceil(menuItemRepo.count() / 10.0).toInt()
         for (i in 0..pageCount) {
             val menuItemsPage = menuItemRepo.findAll(Pageable.ofSize(pageSize).withPage(i))
-            logger.info(listMenuItems(menuItemsPage.content))
+            logger.info(listEntities(menuItemsPage.content))
             logger.info("\n---\nnumber: {}, number of elements: {}, size: {}, total pages: {}\n---", menuItemsPage.number, menuItemsPage.numberOfElements, menuItemsPage.size, menuItemsPage.totalPages)
         }
     }
@@ -108,7 +108,7 @@ class MenuItemRepoTests : TestcontainersTest() {
                     Sort.by(Order(Direction.ASC, "price"))
                 )
             )
-            logger.info(listMenuItems(menuItemsPage.content))
+            logger.info(listEntities(menuItemsPage.content))
             logger.info("\n---\nnumber: {}, number of elements: {}, size: {}, total pages: {}\n---", menuItemsPage.number, menuItemsPage.numberOfElements, menuItemsPage.size, menuItemsPage.totalPages)
 
             if (menuItemsPage.isLast) break
@@ -125,7 +125,7 @@ class MenuItemRepoTests : TestcontainersTest() {
                 )
             )
         )
-        logger.info(listMenuItems(menuItems))
+        logger.info(listEntities(menuItems))
         logger.info(menuItems.size)
         assertEquals(6, menuItems.size)
     }

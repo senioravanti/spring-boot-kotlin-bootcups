@@ -6,10 +6,18 @@ import org.springframework.data.jpa.repository.Meta
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.ListCrudRepository
+import org.springframework.data.repository.ListPagingAndSortingRepository
 import org.springframework.data.repository.query.Param
 import ru.manannikov.bootcupsbackend.entities.OrderItemEntity
 
-interface OrderItemRepo : ListCrudRepository<OrderItemEntity, Long> {
+interface OrderItemRepo
+:
+    ListCrudRepository<OrderItemEntity, Long>,
+    ListPagingAndSortingRepository<OrderItemEntity, Long>
+{
+    @Query("SELECT oi FROM OrderItemEntity oi")
+    override fun findAll(): List<OrderItemEntity>
+
     @Query(COUNT_QUERY)
     fun countByOrderId(@Param("orderId") orderId: Int): Int
 

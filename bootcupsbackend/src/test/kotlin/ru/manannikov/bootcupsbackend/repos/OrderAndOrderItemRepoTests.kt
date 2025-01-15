@@ -20,10 +20,7 @@ import ru.manannikov.bootcupsbackend.mappers.OrderMapper
 import ru.manannikov.bootcupsbackend.repos.specs.Specifications
 import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_AMOUNT_MAX
 import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_STATUS
-import ru.manannikov.bootcupsbackend.utils.CLIENT_NAME
-import ru.manannikov.bootcupsbackend.utils.EMPLOYEE_FIRST_NAME
-import ru.manannikov.bootcupsbackend.utils.EMPLOYEE_LAST_NAME
-import ru.manannikov.bootcupsbackend.utils.EMPLOYEE_MIDDLE_NAME
+import ru.manannikov.bootcupsbackend.utils.*
 import java.math.BigDecimal
 
 @SpringBootTest
@@ -106,8 +103,7 @@ class OrderAndOrderItemRepoTests : TestcontainersTest() {
         )
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Rollback
+    @Transactional
     @Test
     @DisplayName("Должен возвращать заказы анонимных клиентов, отсортированных по возрастанию стоимости")
     fun testOrderOrderItemUpdate() {
@@ -115,7 +111,7 @@ class OrderAndOrderItemRepoTests : TestcontainersTest() {
             Specifications.orderFilter(
                 mapOf(
                     CLIENT_NAME to " ",
-                    ORDER_AMOUNT_MAX to "1847.999999999999999"
+                    ORDER_AMOUNT_MAX to "1847.99"
                 )
             ),
             PageRequest.ofSize(10).withSort(Sort.by(
@@ -128,6 +124,42 @@ class OrderAndOrderItemRepoTests : TestcontainersTest() {
         logger.info(logMessage.append("totalElements: ").append(orders.totalElements).append("\ntotalPages: ").append(orders.totalPages).append("\n---"))
 
         assertEquals(3, orders.totalElements)
+
+
+    }
+
+    @Rollback
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Test
+    fun testFindByOrderId() {
+        val order = orderRepo.findAll(
+            Specifications.orderFilter(
+                mapOf(
+                    EMPLOYEE_EMAIL to "lurks@gmail.com"
+                )
+            )
+        ).last()
+        val orderId = order.id!!
+        logger.info("origin order: {}", order)
+
+        val orderItemsPage = orderItemRepo.findByOrderId(
+            order.id!!, PageRequest.of(0, 2)
+        )
+        logger.info(listEntities(orderItemsPage.content, "order items"))
+        logger.info("totalElements: {}; totalPages: {}", orderItemsPage.totalElements, orderItemsPage.totalPages)
+
+        val newQuantity = 10
+
+        var orderItem = orderItemsPage.content.first()
+        orderItem.quantity = newQuantity.toShort()
+        orderItem.purchase = orderItem.menuItem.price.multiply(BigDecimal(newQuantity))
+
+        orderItem = orderItemRepo.save(orderItem)
+        logger.info("updated order item: {}", orderItem)
+        orderRepo.updateOrderTotalAmount(order.id!!)
+
+        val updatedOrder = orderRepo.findById(orderId)
+        logger.info("updated order: {}", updatedOrder)
     }
 
     companion object {

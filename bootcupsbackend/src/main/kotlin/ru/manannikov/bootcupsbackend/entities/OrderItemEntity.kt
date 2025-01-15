@@ -14,15 +14,16 @@ class OrderItemEntity {
 
     @Column(name = "order_item_quantity")
     var quantity: Short = 1
+
     @Column(name = "order_item_purchase", precision = 10, scale = 2)
     lateinit var purchase: BigDecimal
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     lateinit var parentOrder: OrderEntity
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "menu_item_id")
+    @JoinColumn(name = "menu_item_id", nullable = false)
     lateinit var menuItem: MenuItemEntity
 
     override fun equals(other: Any?): Boolean {

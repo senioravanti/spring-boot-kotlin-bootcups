@@ -25,8 +25,8 @@ abstract class TestcontainersTest {
         }
 
         @JvmStatic
-        protected fun listMenuItems(menuItems: List<Any>): String {
-            val logMessage = StringBuilder("Результат запроса\n---\n\n")
+        protected fun listEntities(menuItems: List<Any>, message: String = "Результат запроса"): String {
+            val logMessage = StringBuilder("$message\n---\n\n")
             menuItems.forEach {
                 logMessage.append(it).append("\n")
             }

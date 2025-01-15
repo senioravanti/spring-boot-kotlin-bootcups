@@ -14,7 +14,7 @@ class ProductRepoTests : TestcontainersTest() {
     @Test
     fun testFindAll() {
         val products = productRepo.findAll()
-        logger.info(listMenuItems(products))
+        logger.info(listEntities(products))
         logger.info(products.size)
     }
 

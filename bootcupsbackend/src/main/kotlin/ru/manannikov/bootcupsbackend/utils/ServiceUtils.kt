@@ -2,9 +2,13 @@ package ru.manannikov.bootcupsbackend.utils
 
 import jakarta.persistence.Table
 import org.apache.logging.log4j.LogManager
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Order
+import ru.manannikov.bootcupsbackend.enums.FieldEnum
+import ru.manannikov.bootcupsbackend.enums.OrderSortFields
 import ru.manannikov.bootcupsbackend.enums.OrderStatus
+import kotlin.enums.EnumEntries
 import kotlin.reflect.KClass
 
 object ServiceUtils {
@@ -47,5 +51,15 @@ object ServiceUtils {
         }
         return Sort.by(sortOrders)
     }
+    fun sortCriteriaToPageRequest(
+        sortCriteria: List<String>,
+        pageRequest: PageRequest,
+        fieldEnumEntries: List<FieldEnum>
+    ): PageRequest = pageRequest.withSort(
+        sortFromSortCriteria(
+            sortCriteria,
+            fieldEnumEntries.map { it.fieldKey }
+        )
+    )
 
 }

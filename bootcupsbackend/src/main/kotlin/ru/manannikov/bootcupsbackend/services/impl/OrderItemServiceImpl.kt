@@ -47,7 +47,7 @@ class OrderItemServiceImpl(
         val savedOrderItem = orderItemRepo.save(entity)
         orderRepo.updateOrderTotalAmount(parentOrder.id!!)
 
-        logger.debug("Пункт заказа успешно добавлен к заказу\nparentOrder: {}\nentity: {}", parentOrder, entity)
+        logger.debug("Пункт заказа успешно добавлен к заказу\nparentOrder: {}\nsavedOrderItem: {}", parentOrder, savedOrderItem)
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

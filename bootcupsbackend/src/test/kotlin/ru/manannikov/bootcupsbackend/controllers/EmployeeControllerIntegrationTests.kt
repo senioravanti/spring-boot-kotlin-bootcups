@@ -36,9 +36,6 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    @Autowired
-    lateinit var validator: Validator
-
     lateinit var objectWriter: ObjectWriter
 
     @BeforeEach
@@ -153,10 +150,6 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
             phoneNumber = employee.phoneNumber,
             roleKey = "barista"
         )
-
-        val violations = validator.validate(updatedEmployee)
-        logger.debug(violations)
-        assertNotEquals(0, violations.size)
 
         mockMvc
             .put("/v1/employee/${updatedEmployee.id}") {

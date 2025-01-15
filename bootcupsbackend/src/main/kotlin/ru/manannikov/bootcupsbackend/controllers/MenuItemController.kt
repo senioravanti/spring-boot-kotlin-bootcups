@@ -3,6 +3,7 @@ package ru.manannikov.bootcupsbackend.controllers
 import jakarta.validation.Valid
 import org.apache.logging.log4j.LogManager
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpStatus
 import org.springframework.util.MultiValueMap
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -98,6 +99,7 @@ class MenuItemController(
     )
 
     @PostMapping(path = ["", "/"])
+    @ResponseStatus(HttpStatus.CREATED)
     fun create(
         @Valid @RequestBody menuItem: MenuItemRequest
     ) {
@@ -124,7 +126,7 @@ class MenuItemController(
     fun delete(
         @PathVariable("id") id: Int
     ) {
-        logger.trace("Запрос на удаление существующей позиции меню ...")
+        logger.trace("Запрос на удаление позиции меню с идентификатором: {}", id)
         menuItemService.deleteById(id)
     }
 
