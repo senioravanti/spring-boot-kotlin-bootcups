@@ -4,7 +4,7 @@ import jakarta.validation.Valid
 import java.math.BigDecimal
 
 data class MenuItemResponse(
-    val id: Int?,
+    val id: Int,
 
     val makes: Short,
 

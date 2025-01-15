@@ -1,9 +1,10 @@
 package ru.manannikov.bootcupsbackend.dto
 
+import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import ru.manannikov.bootcupsbackend.utils.*
 
-class EmployeeDto(
+data class EmployeeRequest(
     val id: Int?,
 
     @get:Pattern(regexp = LAST_NAME_REGEXP, message = "{employee-entity.last-name.pattern}")
@@ -23,13 +24,7 @@ class EmployeeDto(
 
     @get:Pattern(regexp = PHONE_NUMBER_REGEXP, message = "{employee-entity.phone-number.pattern}")
     val phoneNumber: String,
-) {
-    /**
-     * Если это ответ, то название роли, если запрос, то код роли
-     */
-    var roleString: String? = null
 
-    override fun toString(): String {
-        return "EmployeeDto(id=$id, lastName='$lastName', firstName='$firstName', middleName=$middleName, username='$username', password='$password', email='$email', phoneNumber='$phoneNumber', role=$roleString)"
-    }
-}
+    @get:NotBlank
+    val roleKey: String
+)

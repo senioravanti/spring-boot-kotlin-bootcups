@@ -10,4 +10,6 @@ interface EmployeeRepo
     ListCrudRepository<EmployeeEntity, Int>,
     ListPagingAndSortingRepository<EmployeeEntity, Int>,
     JpaSpecificationExecutor<EmployeeEntity>
-{}
+{
+    fun findByEmail(email: String): EmployeeEntity?
+}

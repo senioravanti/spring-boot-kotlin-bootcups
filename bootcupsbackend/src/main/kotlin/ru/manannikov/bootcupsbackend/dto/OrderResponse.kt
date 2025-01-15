@@ -3,16 +3,17 @@ package ru.manannikov.bootcupsbackend.dto
 import java.math.BigDecimal
 
 class OrderResponse(
-    val id: Int?,
+    val id: Int,
 
     val totalAmount: BigDecimal,
     val discountAmount: BigDecimal,
 
-    val client: ClientRequest?,
-    val employee: EmployeeDto
+    val client: ClientResponse?,
+    val employee: EmployeeResponse,
+
+    val createdAt: Long
 ) {
-    var createdAt: Long? = null
-    var statusDto: FieldEnumDto? = null
+    lateinit var statusDto: FieldEnumDto
     var orderItemCount: Int? = null
 
     override fun toString(): String {

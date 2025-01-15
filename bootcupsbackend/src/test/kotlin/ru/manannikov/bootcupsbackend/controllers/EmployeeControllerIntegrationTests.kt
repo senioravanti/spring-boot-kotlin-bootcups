@@ -20,12 +20,12 @@ import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import ru.manannikov.bootcupsbackend.TestcontainersTest
-import ru.manannikov.bootcupsbackend.dto.EmployeeDto
+import ru.manannikov.bootcupsbackend.dto.EmployeeRequest
 import ru.manannikov.bootcupsbackend.dto.PaginationResponse
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.FIRST_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.LAST_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.MIDDLE_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.ROLE_NAME
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.EMPLOYEE_ROLE_NAME
 import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
 import ru.manannikov.bootcupsbackend.utils.PAGE_SIZE
 import ru.manannikov.bootcupsbackend.utils.SORT
@@ -60,7 +60,7 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
                 param(PAGE_NUMBER, "0")
 
                 param(FIRST_NAME, "Рома")
-                param(ROLE_NAME, "BEBRUS")
+                param(EMPLOYEE_ROLE_NAME, "BEBRUS")
 
                 param(SORT, "first_name_desc", "last_name_asc")
             }
@@ -77,7 +77,7 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
     @Test
     @DisplayName("Проверяю настройки валидации и работу RestExceptionHandler")
     fun testCreate() {
-        val employee = EmployeeDto(
+        val employee = EmployeeRequest(
             null,
             "Батонский",
             "Антон",
@@ -88,8 +88,8 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
 
             "anton3baton3@g.cn",
             "+7 900 300 34-34",
-        ).apply { roleString = "barista" }
-
+            "barista"
+        )
         val employeeJson = objectWriter.writeValueAsString(employee)
         mockMvc
             .post("/v1/employee/") {
@@ -141,10 +141,10 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(not(emptyString())))
 
-        val employee = objectMapper.readValue(result, object: TypeReference<PaginationResponse<EmployeeDto>>(){}).content.first()
+        val employee = objectMapper.readValue(result, object: TypeReference<PaginationResponse<EmployeeRequest>>(){}).content.first()
         logger.debug(employee)
 
-        val updatedEmployee = EmployeeDto(
+        val updatedEmployee = EmployeeRequest(
             id = employee.id,
             lastName = employee.lastName,
             firstName = employee.lastName,
@@ -155,7 +155,8 @@ class EmployeeControllerIntegrationTests : TestcontainersTest() {
 
             email = "anton_3@g.cn",
             phoneNumber = employee.phoneNumber,
-        ).apply { roleString = "barista" }
+            roleKey = "barista"
+        )
 
         val violations = validator.validate(updatedEmployee)
         logger.debug(violations)

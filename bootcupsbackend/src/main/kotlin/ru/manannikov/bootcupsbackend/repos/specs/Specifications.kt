@@ -7,10 +7,7 @@ import jakarta.persistence.criteria.Root
 import org.apache.logging.log4j.LogManager
 import org.springframework.data.jpa.domain.Specification
 import ru.manannikov.bootcupsbackend.entities.*
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.FIRST_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.LAST_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.MIDDLE_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.ROLE_NAME
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.EMPLOYEE_ROLE_NAME
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.CATEGORY
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MAX
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_MAKES_MIN
@@ -18,7 +15,13 @@ import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITE
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_PRICE_MIN
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.MENU_ITEM_TOPPING
 import ru.manannikov.bootcupsbackend.services.MenuItemService.Companion.PRODUCT_NAME
+import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_AMOUNT_MAX
+import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_AMOUNT_MIN
+import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_CREATED_AFTER
+import ru.manannikov.bootcupsbackend.services.OrderService.Companion.ORDER_CREATED_BEFORE
+import ru.manannikov.bootcupsbackend.utils.*
 import ru.manannikov.bootcupsbackend.utils.ServiceUtils.snakeToCamelCase
+import sun.jvm.hotspot.oops.CellTypeState.value
 import java.math.BigDecimal
 
 object Specifications {
@@ -147,18 +150,68 @@ object Specifications {
         filter.forEach {
             (key, value) ->
             when (key) {
-                LAST_NAME, FIRST_NAME, MIDDLE_NAME -> {
+                EMPLOYEE_LAST_NAME, EMPLOYEE_FIRST_NAME, EMPLOYEE_MIDDLE_NAME -> {
                     criteria = cb.and(
                         criteria,
                         cb.like(root.get(snakeToCamelCase(key)), "%$value%")
                     )
                 }
-                ROLE_NAME -> {
+                EMPLOYEE_ROLE_NAME -> {
                     val employeesRoleJoin = root.join<EmployeeEntity, RoleEntity>("role")
                     criteria = cb.and(
                         criteria,
                         cb.equal(employeesRoleJoin.get<String>("key"), value)
                     )
+                }
+            }
+        }
+
+        criteria
+    }
+
+    fun orderFilter(
+        filter: Map<String, String>
+    ): Specification<OrderEntity> = Specification { root: Root<OrderEntity>, cq: CriteriaQuery<*>?, cb: CriteriaBuilder ->
+        var criteria = cb.conjunction()
+
+        filter.forEach {
+            (key, value) ->
+            when (key) {
+                EMPLOYEE_LAST_NAME, EMPLOYEE_FIRST_NAME, EMPLOYEE_MIDDLE_NAME -> {
+                    val orderEmployeeJoin = root.join<OrderEntity, EmployeeEntity>("employee")
+                    criteria = cb.and(
+                        criteria,
+                        cb.like(orderEmployeeJoin.get(snakeToCamelCase(key)), "%$value%")
+                    )
+                }
+                EMPLOYEE_EMAIL -> {
+                    val orderEmployeeJoin = root.join<OrderEntity, EmployeeEntity>("employee")
+                    criteria = cb.and(
+                        criteria,
+                        cb.equal(
+                            orderEmployeeJoin.get<String>(
+                                snakeToCamelCase(key.substringAfter("_"))
+                            ),
+                            value)
+                    )
+                }
+                CLIENT_NAME -> {
+
+                }
+                CLIENT_EMAIL -> {
+
+                }
+                ORDER_AMOUNT_MAX -> {
+
+                }
+                ORDER_AMOUNT_MIN -> {
+
+                }
+                ORDER_CREATED_BEFORE -> {
+
+                }
+                ORDER_CREATED_AFTER -> {
+
                 }
             }
         }

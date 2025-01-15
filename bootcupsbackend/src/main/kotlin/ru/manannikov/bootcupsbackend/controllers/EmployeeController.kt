@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.PageRequest
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import ru.manannikov.bootcupsbackend.dto.EmployeeDto
+import ru.manannikov.bootcupsbackend.dto.EmployeeRequest
+import ru.manannikov.bootcupsbackend.dto.EmployeeResponse
 import ru.manannikov.bootcupsbackend.dto.FieldEnumDto
 import ru.manannikov.bootcupsbackend.dto.PaginationResponse
 import ru.manannikov.bootcupsbackend.entities.RoleEntity
@@ -18,7 +19,7 @@ import ru.manannikov.bootcupsbackend.services.EmployeeService
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.FIRST_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.LAST_NAME
 import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.MIDDLE_NAME
-import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.ROLE_NAME
+import ru.manannikov.bootcupsbackend.services.EmployeeService.Companion.EMPLOYEE_ROLE_NAME
 import ru.manannikov.bootcupsbackend.utils.MiscellaneousMapper
 import ru.manannikov.bootcupsbackend.utils.PAGE_NUMBER
 import ru.manannikov.bootcupsbackend.utils.PAGE_SIZE
@@ -43,7 +44,7 @@ class EmployeeController(
 
         @RequestParam(name = SORT, required = false) sortCriteria: List<String>?,
         @RequestParam params: Map<String, String>
-    ): PaginationResponse<EmployeeDto> {
+    ): PaginationResponse<EmployeeResponse> {
         var pageRequest = PageRequest.of(pageNumber, pageSize)
 
         logger.debug("filter: {}", params)
@@ -55,7 +56,7 @@ class EmployeeController(
                     if (key.isNotBlank())
                         filter[key] = value
                 }
-                ROLE_NAME -> {
+                EMPLOYEE_ROLE_NAME -> {
                     try {
                         roleService.findByKey(key)
                         filter[key] = value
@@ -89,13 +90,13 @@ class EmployeeController(
     @GetMapping("/{id}")
     fun findById(
         @PathVariable("id") id: Int
-    ): EmployeeDto = employeeMapper.toDto(
+    ): EmployeeResponse = employeeMapper.toDto(
         employeeService.findById(id)
     )
 
     @PostMapping(path = ["", "/"])
     fun create(
-       @Valid @RequestBody employee: EmployeeDto
+       @Valid @RequestBody employee: EmployeeRequest
     ) {
         logger.trace("Запрос на регистрацию нового сотрудника:\n{}", employee)
         employeeService.save(
@@ -106,7 +107,7 @@ class EmployeeController(
     @PutMapping("/{id}")
     fun update(
         @PathVariable("id") id: Int,
-        @Valid @RequestBody employee: EmployeeDto
+        @Valid @RequestBody employee: EmployeeRequest
     ) {
         logger.trace("Запрос на обновление данных сотрудника с идентификатором {}:\n{}", id, employee)
         employeeService.update(

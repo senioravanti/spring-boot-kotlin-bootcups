@@ -2,13 +2,13 @@ package ru.manannikov.bootcupsbackend.mappers.decorators
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.context.MessageSource
-import ru.manannikov.bootcupsbackend.dto.EmployeeDto
+import ru.manannikov.bootcupsbackend.dto.EmployeeRequest
+import ru.manannikov.bootcupsbackend.dto.EmployeeResponse
 import ru.manannikov.bootcupsbackend.entities.EmployeeEntity
 import ru.manannikov.bootcupsbackend.entities.RoleEntity
 import ru.manannikov.bootcupsbackend.mappers.EmployeeMapper
 import ru.manannikov.bootcupsbackend.services.DictionaryService
-import java.util.*
+import ru.manannikov.bootcupsbackend.utils.MiscellaneousMapper
 
 abstract class EmployeeMapperDecorator : EmployeeMapper {
     @set:Autowired
@@ -17,14 +17,15 @@ abstract class EmployeeMapperDecorator : EmployeeMapper {
     @set:Qualifier("roleService")
     @set:Autowired
     lateinit var roleService: DictionaryService<RoleEntity>
-    @set:Autowired
-    lateinit var messageSource: MessageSource
 
-    override fun toDto(employee: EmployeeEntity): EmployeeDto = delegate.toDto(employee).apply {
-        roleString = messageSource.getMessage(employee.role.name, null, Locale.getDefault())
+    @set:Autowired
+    lateinit var miscellaneousMapper: MiscellaneousMapper
+
+    override fun toDto(employee: EmployeeEntity): EmployeeResponse = delegate.toDto(employee).apply {
+        role = miscellaneousMapper.dictionaryToDto(employee.role)
     }
 
-    override fun toEntity(employee: EmployeeDto): EmployeeEntity = delegate.toEntity(employee).apply {
-        role = roleService.findByKey(employee.roleString!!)
+    override fun toEntity(employee: EmployeeRequest): EmployeeEntity = delegate.toEntity(employee).apply {
+        role = roleService.findByKey(employee.roleKey)
     }
 }

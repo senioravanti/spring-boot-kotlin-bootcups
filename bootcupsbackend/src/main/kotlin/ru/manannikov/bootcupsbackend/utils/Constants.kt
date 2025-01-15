@@ -22,3 +22,12 @@ const val PAGE_NUMBER = "page_number"
 const val PAGE_SIZE = "page_size"
 
 const val SORT = "sort"
+
+const val EMPLOYEE_LAST_NAME = "last_name"
+const val EMPLOYEE_FIRST_NAME = "first_name"
+const val EMPLOYEE_MIDDLE_NAME = "middle_name"
+const val EMPLOYEE_EMAIL = "employee_email"
+
+const val CLIENT_NAME = "name"
+const val CLIENT_EMAIL = "client_email"
+const val CLIENT_ANONYMOUS = "anonymous"

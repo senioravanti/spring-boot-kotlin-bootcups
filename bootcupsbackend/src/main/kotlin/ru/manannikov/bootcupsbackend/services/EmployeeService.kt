@@ -14,10 +14,6 @@ interface EmployeeService : CrudService<EmployeeEntity, Int> {
      * role_name -> название должности сотрудника
      */
     companion object {
-        const val LAST_NAME = "last_name"
-        const val FIRST_NAME = "first_name"
-        const val MIDDLE_NAME = "middle_name"
-
-        const val ROLE_NAME = "role_name"
+        const val EMPLOYEE_ROLE_NAME = "role_name"
     }
 }

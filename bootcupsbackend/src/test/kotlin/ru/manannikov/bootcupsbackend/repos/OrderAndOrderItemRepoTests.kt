@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import ru.manannikov.bootcupsbackend.TestcontainersTest
 import ru.manannikov.bootcupsbackend.enums.OrderStatus
+import ru.manannikov.bootcupsbackend.mappers.OrderItemMapper
 import ru.manannikov.bootcupsbackend.mappers.OrderMapper
 
 @SpringBootTest
@@ -18,15 +19,25 @@ class OrderAndOrderItemRepoTests : TestcontainersTest() {
 
     @Autowired
     lateinit var orderMapper: OrderMapper
+    @Autowired
+    lateinit var orderItemMapper: OrderItemMapper
 
     @Test
     fun testCountByOrderId() {
         val order = orderRepo.findByStatus(OrderStatus.RAISED).first()
         val orderItemCount = orderItemRepo.countByOrderId(order.id!!)
+        val orderItems = orderItemRepo.findByOrderId(order.id!!)
 
-        val orderDto = orderMapper.toDto(order)
         logger.info("---\norder:\n{}\norder item count:\n{}\n*", order, orderItemCount)
-        logger.info("orderDto:\n{}\n---", orderDto)
+        logger.info("orderDto:\n{}\n*", orderMapper.toDto(order))
+
+        val logMessage = StringBuilder("\n***\norderItems:\n")
+        orderItems.forEach { logMessage.append(it).append("\n") }
+        logMessage.append("***\nOrderItemsDto")
+        orderItems.forEach {
+            logMessage.append(orderItemMapper.toDto(it)).append("\n")
+        }
+        logger.info(logMessage.append("\n---"))
 
         assertEquals(1, orderItemCount)
     }

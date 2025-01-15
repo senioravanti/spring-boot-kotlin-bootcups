@@ -2,7 +2,6 @@ package ru.manannikov.bootcupsbackend.dto
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
-import ru.manannikov.bootcupsbackend.entities.UnitEntity
 
 data class UnitDto (
     val id: Short?,

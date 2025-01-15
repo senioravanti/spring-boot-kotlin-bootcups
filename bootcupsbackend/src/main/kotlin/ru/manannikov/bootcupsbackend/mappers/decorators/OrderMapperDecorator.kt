@@ -27,12 +27,10 @@ abstract class OrderMapperDecorator : OrderMapper {
     lateinit var orderItemService: OrderItemService
 
     override fun toDto(order: OrderEntity): OrderResponse = delegate.toDto(order).apply {
-        createdAt = order.createdAt.epochSecond
         statusDto = miscellaneousMapper.toFieldEnumDto(order.status)
         orderItemCount = orderItemService.countByOrderId(order.id!!)
     }
     override fun toEntity(order: OrderRequest): OrderEntity = delegate.toEntity(order).apply {
-        createdAt = Instant.ofEpochSecond(order.createdAt)
         status = OrderStatus.valueOf(order.statusString.uppercase())
 
         client = order.clientId ?.let {
