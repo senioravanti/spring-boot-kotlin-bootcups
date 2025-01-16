@@ -38,8 +38,8 @@ export default defineComponent({
     </thead>
     <tbody>
       <!-- <tr></tr> -->
-      <tr v-for="data in pageResponse.content" v-bind:key = "data.id">
-        <td>{{ data.id }}</td>
+      <tr v-for="(data, index) in pageResponse.content" v-bind:key = "data.id">
+        <td>{{ index + 1 }}</td>
         <td class="align-left">{{ productNameWithTopping(data.product.name, data.topping) }}</td>
         <td>{{ unitText(data.makes, data.unit.label) }}</td>
         <td>{{ data.price }}</td>

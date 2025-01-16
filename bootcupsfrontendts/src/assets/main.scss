@@ -24,6 +24,8 @@ a {
 
   background-color: transparent !important;
 
+  cursor: pointer;
+
   &:hover,
   &.active {
     color: var(--color-primary);
@@ -31,15 +33,23 @@ a {
 }
 
 .container-table {
+  width: 100%;
+  
   margin-top: 1rem;
-
+  
   flex-direction: column;
-  justify-content: center;
+
   gap: 1.5rem;
 }
 
 table {
   border-collapse: collapse;
+  width: 100%;
+  
+  overflow-x: scroll;
+  white-space: normal;
+  
+  display: table-cell;
 }
 
 th, td {
@@ -58,6 +68,9 @@ td {
 td.align-left {
   text-align: left;
 }
+td.align-right {
+  text-align: right;
+}
 
 @media (hover: hover) {
   a:hover {
@@ -65,15 +78,3 @@ td.align-left {
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0;
-  }
-}

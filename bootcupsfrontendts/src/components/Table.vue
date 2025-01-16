@@ -2,6 +2,10 @@
 import { defineComponent } from 'vue';
 
 import MenuItemTable from './MenuItemTable.vue';
+import OrdersTable from './OrdersTable.vue';
+import EmployeeTable from './EmployeeTable.vue';
+
+
 import Pagination from './Pagination.vue';
 
 import RestClient from '../services/RestClient';
@@ -10,11 +14,12 @@ import {MENU_ENDPOINT, ORDERS_ENDPOINT, EMPOYEES_ENDPOINT, PAGE_SIZE} from '../u
 
 export default defineComponent({
   name: 'Table',
-  props: {
-  },
   components: {
-    MenuItemTable, 
-    Pagination
+    MenuItemTable,
+    OrdersTable,
+    EmployeeTable,
+    
+    Pagination,
   },
   data() {
     // Возвращает реактивный объект, который можно использовать в шаблоне и методах
@@ -23,7 +28,11 @@ export default defineComponent({
       pageResponse: [],
 
       activePageButton: null,
-      endpoint: `/${MENU_ENDPOINT}/`
+      endpoint: `/${MENU_ENDPOINT}/`,
+
+      menuItemsTable: MENU_ENDPOINT,
+      ordersTable: ORDERS_ENDPOINT,
+      employeeTable: EMPOYEES_ENDPOINT
     }
   },
   computed: {
@@ -32,40 +41,75 @@ export default defineComponent({
   methods: {
     loadDataFromBackend(
       pageNumber: number, 
-      pageSize: number
+      endpoint: string,
+      pageSize: number = PAGE_SIZE
     ) {
-      this.restClient.findAllMenuItems(
-        this.endpoint,
+      console.log('endpoint: ', endpoint);
+      this.restClient
+        .findAllMenuItems(
+          endpoint,
 
-        pageNumber, pageSize
-      )
+          pageNumber, pageSize
+        )
         .then(response => {
           this.pageResponse = response.data || []; 
-          console.log('rest data:\n', this.pageResponse);
-          response.data;  
+          this.endpoint = endpoint;
+          
+          console.log(
+            'rest data:\nendpoint: ', 
+            
+            this.pageResponse, 
+            this.endpoint
+          );
+
+          response.data; 
         })
       ;
     },
     onPageNumberChanged() {
-      this.loadDataFromBackend(this.$refs.pagination.pageNumber, PAGE_SIZE);
+      this.loadDataFromBackend(
+        this.$refs.pagination.pageNumber,
+        this.endpoint
+      );
     }
   },
   mounted() {
+    console.log('mounted: endpoint: ', this.endpoint);
     this.loadDataFromBackend(
-      0, PAGE_SIZE
+      0,
+      this.endpoint
     );
-    console.log('menu endpoint', MENU_ENDPOINT);
   }
 })
 </script>
 
 <template>
-  <div class="container container-table">
+  <div 
+    v-if="endpoint.includes(menuItemsTable)" 
+    
+    class="container container-table"
+  >
     <MenuItemTable :pageResponse="pageResponse"/>
   </div>
 
+  <div 
+    v-if="endpoint.includes(ordersTable)" 
+    
+    class="container container-table"
+  >
+    <OrdersTable :pageResponse="pageResponse"/>
+  </div>
+
+  <div 
+    v-if="endpoint.includes(employeeTable)" 
+    
+    class="container container-table"
+  >
+    <EmployeeTable :pageResponse="pageResponse"/>
+  </div>
+
   <div class="container paging">
-    <Pagination 
+    <Pagination
       ref="pagination" @page-number-changed="onPageNumberChanged"
 
       :totalPages="pageResponse.totalPages"
@@ -73,32 +117,8 @@ export default defineComponent({
       :hasNext="pageResponse.hasNext"
     />
   </div>
+
 </template>
 
 <style lang="scss">
-.paging {
-  
-  margin-top: 2rem;
-
-  justify-content: center;
-
-  & .page-link {
-    color: var(--color-header-background);
-
-    border: 1px solid var(--color-header-background);
-    padding: .25rem .75rem .25rem .75rem;
-
-    margin-left: -1px;
-
-    &:hover, 
-    &.active {
-      color: var(--color-primary);
-    }
-
-    &.active {
-      color: var(--color-background);
-      background-color: var(--color-primary) !important;  
-    }
-  }
-}
 </style>

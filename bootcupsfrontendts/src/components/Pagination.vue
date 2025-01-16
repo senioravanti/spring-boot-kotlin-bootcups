@@ -1,8 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import {MENU_ENDPOINT, ORDERS_ENDPOINT, EMPOYEES_ENDPOINT, PAGE_SIZE} from '../utils/Constants';
-
 export default defineComponent({
   name: 'Paging',
 	props: {
@@ -16,6 +14,7 @@ export default defineComponent({
 			pageNumber: 0
 		}
 	},
+	emits: ['pageNumberChanged'],
 	methods: {
 		onChangePage(event: Event) {
       if (this.activePageButton !== null) {

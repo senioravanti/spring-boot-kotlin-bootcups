@@ -3,24 +3,30 @@ import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import Table from './components/Table.vue'
 
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const header = ref(null);
 const table = ref(null);
 
 function onTableChanged() {
-  console.log('event emitted !!!', header.value.activeTable.id);
+  const newEndpoint = `/${header.value.activeTable.id}/`; 
+
+  // table.value.endpoint = newEndpoint;
+
+  console.log('table changed: ', header.value.activeTable.id);
+  table.value.loadDataFromBackend(0, newEndpoint);
+  console.log('request was send')
 }
 
+onMounted(() => {
+  onTableChanged();  
+});
 </script>
 
 <template>
   <div class="content">
     <header>
-      <div class="wrapper">
-        <!-- Импорт шаблона -->
         <Header @table-changed="onTableChanged" ref="header" msg="Виртуальная кофейня Bootcups" brandName="Bootcups" />
-      </div>
     </header>
     <main class="container">
       <Table ref="table"/>
@@ -46,17 +52,10 @@ header {
   header {
     display: flex;
     place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
   }
 
   .logo {
     margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
   }
 }
 </style>

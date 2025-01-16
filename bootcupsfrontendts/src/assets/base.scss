@@ -118,8 +118,11 @@ main {
   align-items: center;
 }
 
+.navbar, .content, .footer {
+  width: 100vw;
+}
+
 .navbar, .footer {
-  width: 100%;
 
   background-color: var(--color-header-background);
 

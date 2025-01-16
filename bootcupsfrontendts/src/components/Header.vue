@@ -19,9 +19,6 @@ export default defineComponent({
   },
   methods: {
     onChangeTable(event: Event) {
-      if (this.activeTable === null) {
-        this.activeTable = this.$refs.initTable
-      } 
       this.activeTable.classList.remove('active');  
 
       this.activeTable = event.target
@@ -33,6 +30,8 @@ export default defineComponent({
   mounted() {
     this.brandName
     this.msg
+
+    this.activeTable = this.$refs.initTable
   }
 });
 </script>
