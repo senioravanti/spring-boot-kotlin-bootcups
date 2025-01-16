@@ -68,10 +68,6 @@ h3 {
   --stroke-color: var(--color-background);
 }
 
-.navbar {
-  justify-content: space-between;
-}
-
 .container-logo {
   gap: 1rem;
 

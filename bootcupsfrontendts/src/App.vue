@@ -12,7 +12,6 @@ import Table from './components/Table.vue'
         <Header msg="Виртуальная кофейня Bootcups" brandName="Bootcups" />
       </div>
     </header>
-
     <main class="container">
       <Table/>
     </main>

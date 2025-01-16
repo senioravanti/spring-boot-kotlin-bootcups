@@ -1,5 +1,6 @@
 <script lang="ts">
 import RestClient from '../services/RestClient';
+import type { AxiosResponse } from 'axios';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -13,6 +14,9 @@ export default defineComponent({
       restData: []
     }
   },
+  computed: {
+       
+  },
   methods: {
     loadDataFromBackend() {
       this.restClient.findAllMenuItems(0, 10)
@@ -22,10 +26,19 @@ export default defineComponent({
           response.data;  
         })
       ;
+    },
+
+    unitText(menuItemMakes: string, unitLabel: string): string {
+      return menuItemMakes + ' ' + unitLabel + '.'
+    },
+
+    firstLetterToLowercase(str: string) {
+      return str.charAt(0).toLowerCase() + str.slice(1);
+    },
+
+    productNameWithTopping(productName: string, topping: string | null): string {
+      return productName + ' ' + (topping == null ? '' : this.firstLetterToLowercase(topping));
     }
-  },
-  computed: {
-    
   },
   mounted() {
     this.loadDataFromBackend();
@@ -41,7 +54,7 @@ export default defineComponent({
         <tr>
           <th>№</th>
           <th>Название</th>
-          <th>Выход порции</th>
+          <th>Объем порции</th>
           <th>Цена</th>
         </tr>
       </thead>
@@ -49,36 +62,20 @@ export default defineComponent({
         <!-- <tr></tr> -->
         <tr v-for="data in restData.content" v-bind:key = "data.id">
           <td>{{ data.id }}</td>
-          <td class="align-left">{{ 
-          
-          `${data.product.name.trimEnd()} ${data.topping == null ? '' : data.topping.toLowerCase()}` 
-          
-          }}</td>
-          <td>{{ `${data.makes} ${data.unit.label}.` }}</td>
+          <td class="align-left">{{ productNameWithTopping(data.product.name, data.topping) }}</td>
+          <td>{{ unitText(data.makes, data.unit.label) }}</td>
           <td>{{ data.price }}</td>
           <!-- <td>{{ new Date(Date.parse(data.birth_date)).toLocaleDateString('ru-RU') }}</td> -->
         </tr>
       </tbody>
       <tfoot>
-        <tr v-if="oldestSinger">
-          <th colspan="4">{{  
-            
-            `Самый старый певец ${oldestSinger.first_name} ${oldestSinger.last_name} родился ${
-              new Date(oldestSinger.birth_date).toLocaleDateString(
-                'ru-RU', 
-                { day: 'numeric', month: 'long', year: 'numeric' }
-              )
-            }` 
-            
-          }}</th>
-        </tr>
       </tfoot>
     </table>
   </div>
   <div class="container paging">
-    <a class="page-link" href="#">1</a>
-    <a class="page-link" href="#">2</a>
-    <a class="page-link" href="#">3</a>
+    <a  class="page-link" href="#">&larr;</a>
+    <a  v-for="i in restData.totalPages" class="page-link" href="#">{{ i }}</a>
+    <a class="page-link active" href="#">&rarr;</a>
   </div>
 </template>
 
@@ -86,6 +83,7 @@ export default defineComponent({
 .paging {
   
   margin-top: 2rem;
+
   justify-content: center;
 
   & .page-link {
@@ -95,6 +93,11 @@ export default defineComponent({
     padding: .25rem .75rem .25rem .75rem;
 
     margin-left: -1px;
+
+    &:hover, 
+    &.active {
+      color: var(--color-primary);
+    }
   }
 }
 </style>

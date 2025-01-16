@@ -1,17 +1,20 @@
 /* color palette from <https://github.com/vuejs/theme> */
+$header-height: 80px; 
+$footer-height: 128px;
+
 :root {
   font-size: 16px;
 
   /* Цветовая палитра */
-  --vt-c-white: #ffffff;
+  --vt-c-white: #EEEBD3;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
 
-  --vt-c-black: #181818;
+  --vt-c-black: #110B11;
   --vt-c-black-soft: #222222;
   --vt-c-black-mute: #282828;
 
-  --vt-c-indigo: #2c3e50;
+  --vt-c-indigo: #04151F;
 
   --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
   --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
@@ -23,8 +26,8 @@
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 
-  --vt-c-header-light: #362417;
-  --vt-c-header-dark: #92817A;
+  --vt-c-header-light: #402E2A;
+  --vt-c-header-dark: #93827F;
 }
 
 /* Палитра светлой темы */
@@ -42,7 +45,7 @@
   --color-header-background: var(--vt-c-header-light);
 
   --section-gap: 160px;
-  --color-primary:  hsla(160, 100%, 37%, 1);
+  --color-primary:  #399E5A;
 }
 
 /* Палитра темной темы */
@@ -73,6 +76,7 @@
 body {
   width: 100%;
   min-height: 100vh;
+  
   color: var(--color-text);
   background: var(--color-background);
     
@@ -107,10 +111,6 @@ main {
   justify-content: space-between;
 }
 
-.content {
-  flex: 1;
-}
-
 .container {
   display: flex;
   align-items: center;
@@ -119,6 +119,33 @@ main {
 .navbar, .footer {
   width: 100%;
 
-  padding: .75rem 1.5rem;
   background-color: var(--color-header-background);
+
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.navbar {
+  height: $header-height;
+
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content {
+  min-height: calc(100vh - $footer-height);
+}
+
+.footer {
+  height: $footer-height;
+  gap: 1rem;
+
+  flex-direction: column;
+  justify-content: start;
+
+  padding-top: 1rem;
+}
+
+main {
+
 }

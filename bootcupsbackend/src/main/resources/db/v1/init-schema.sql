@@ -807,7 +807,7 @@ WHERE
         product_id
     FROM products
 WHERE
-    product_name = 'compote'),(
+    product_name = 'Компот'),(
     SELECT
         category_id
     FROM categories
@@ -818,7 +818,7 @@ WHERE
         product_id
     FROM products
 WHERE
-    product_name = 'compote'),(
+    product_name = 'Компот'),(
     SELECT
         category_id
     FROM categories
@@ -829,7 +829,7 @@ WHERE
         product_id
     FROM products
 WHERE
-    product_name = 'compote'),(
+    product_name = 'Компот'),(
     SELECT
         category_id
     FROM categories
@@ -908,7 +908,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'compote'), 230, 25, 'Из замороженной смородины');
+                product_name = 'Компот'), 230, 25, 'Из замороженной смородины');
 
 INSERT INTO menu_items(
     unit_id,
@@ -929,7 +929,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'compote'), 
+                product_name = 'Компот'), 
 
         360, 36, 
         'Из замороженной смородины');
@@ -952,7 +952,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'compote'), 230, 39, 'Из свежих яблок и клюквы');
+                product_name = 'Компот'), 230, 39, 'Из свежих яблок и клюквы');
 
 INSERT INTO menu_items(
     unit_id,
@@ -972,7 +972,7 @@ VALUES ((
             FROM
                 products
             WHERE
-                product_name = 'compote'), 360, 55, 'Из свежих яблок и клюквы');
+                product_name = 'Компот'), 360, 55, 'Из свежих яблок и клюквы');
 
 INSERT INTO menu_items(
     unit_id,
@@ -2214,7 +2214,7 @@ VALUES (
                     FROM
                         products
                     WHERE
-                        product_name = 'compote')
+                        product_name = 'Компот')
                     AND menu_item_topping = 'Из замороженной смородины'
                     AND menu_item_makes = 230),
                 3,(
@@ -2227,7 +2227,7 @@ VALUES (
                             product_id
                         FROM products
                     WHERE
-                        product_name = 'compote')
+                        product_name = 'Компот')
                     AND menu_item_topping = 'Из замороженной смородины'
                     AND menu_item_makes = 230) * 3),
 ((
@@ -2311,7 +2311,7 @@ VALUES ((
                     FROM
                         products
                     WHERE
-                        product_name = 'compote')
+                        product_name = 'Компот')
                     AND menu_item_topping = 'Из свежих яблок и клюквы'
                     AND menu_item_makes = 360),
                 1,(
@@ -2324,7 +2324,7 @@ VALUES ((
                             product_id
                         FROM products
                     WHERE
-                        product_name = 'compote')
+                        product_name = 'Компот')
                     AND menu_item_topping = 'Из свежих яблок и клюквы'
                     AND menu_item_makes = 360) * 1),
 ((
@@ -3350,7 +3350,7 @@ VALUES ((
                     FROM
                         products
                     WHERE
-                        product_name = 'compote')
+                        product_name = 'Компот')
                     AND menu_item_topping = 'Из свежих яблок и клюквы'
                     AND menu_item_makes = 360),
                 2,(
@@ -3363,7 +3363,7 @@ VALUES ((
                             product_id
                         FROM products
                     WHERE
-                        product_name = 'compote')
+                        product_name = 'Компот')
                     AND menu_item_topping = 'Из свежих яблок и клюквы'
                     AND menu_item_makes = 360) * 2),
 ((

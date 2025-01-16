@@ -43,14 +43,7 @@ export default defineComponent({
 </template>
 
 <style lang="scss">
-.footer {
-  gap: 1rem;
 
-  padding-top: 1.5rem;
-  padding-bottom: 3rem;
-
-  flex-direction: column;
-}
 .copyright {
   width: 100%;
 
