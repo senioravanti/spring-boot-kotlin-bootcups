@@ -1,7 +1,12 @@
 <script lang="ts">
 import RestClient from '../services/RestClient';
+import firstLetterToLowercase from '../utils/Utils';
+
 import type { AxiosResponse } from 'axios';
+
 import { defineComponent } from 'vue';
+
+const PAGE_SIZE = 10;
 
 export default defineComponent({
   name: '',
@@ -11,15 +16,20 @@ export default defineComponent({
     // Возвращает реактивный объект, который можно использовать в шаблоне и методах
     return {
       restClient: new RestClient(),
-      restData: []
+      restData: [],
+
+      activePageButton: null
     }
   },
   computed: {
        
   },
   methods: {
-    loadDataFromBackend() {
-      this.restClient.findAllMenuItems(0, 10)
+    loadDataFromBackend(
+      pageNumber: number, 
+      pageSize: number
+    ) {
+      this.restClient.findAllMenuItems(pageNumber, pageSize)
         .then(response => {
           this.restData = response.data || []; 
           console.log('rest data:\n', this.restData);
@@ -28,20 +38,49 @@ export default defineComponent({
       ;
     },
 
+    // utiils
     unitText(menuItemMakes: string, unitLabel: string): string {
       return menuItemMakes + ' ' + unitLabel + '.'
     },
 
-    firstLetterToLowercase(str: string) {
-      return str.charAt(0).toLowerCase() + str.slice(1);
+    productNameWithTopping(productName: string, topping: string | null): string {
+      return productName + ' ' + (topping == null ? '' : firstLetterToLowercase(topping));
     },
 
-    productNameWithTopping(productName: string, topping: string | null): string {
-      return productName + ' ' + (topping == null ? '' : this.firstLetterToLowercase(topping));
+    // handlers
+    changePage(event: Event) {
+      if (this.activePageButton != null) {
+        this.activePageButton.classList.remove('active');
+      }
+
+      let pageNumber: number | null = null
+      if (event.target.id == "previousPage") {
+
+        pageNumber = this.activePageButton.innerText - 2;
+
+        this.activePageButton = this.$refs.pageLinks[pageNumber];   
+
+      } else if (event.target.id == "nextPage") {
+
+        pageNumber = this.activePageButton?.innerText ?? 0;
+        
+        this.activePageButton = this.$refs.pageLinks[pageNumber];
+
+
+      } else {
+      
+        pageNumber = event.target.innerText - 1;
+        this.activePageButton = event.target;
+      
+      }
+      
+      this.activePageButton.classList.add('active');
+      this.loadDataFromBackend(pageNumber, PAGE_SIZE)
+
     }
   },
   mounted() {
-    this.loadDataFromBackend();
+    this.loadDataFromBackend(0, PAGE_SIZE);
   }
 })
 </script>
@@ -73,9 +112,31 @@ export default defineComponent({
     </table>
   </div>
   <div class="container paging">
-    <a  class="page-link" href="#">&larr;</a>
-    <a  v-for="i in restData.totalPages" class="page-link" href="#">{{ i }}</a>
-    <a class="page-link active" href="#">&rarr;</a>
+    <a 
+      @click="changePage" 
+
+      id="previousPage"
+
+      v-show="restData.hasPrevious === true" class="page-link" href="#"
+    >&larr;</a>
+    
+    <a 
+      @click="changePage" 
+      
+      v-for="i in restData.totalPages" 
+      ref="pageLinks"
+
+      :class="['page-link', {'active': activePageButton === null && i === 1}]" href="#"
+    >{{ i }}</a>
+    
+    <a 
+      @click="changePage" 
+
+      id="nextPage"
+
+      v-show="restData.hasNext === true" 
+      class="page-link" href="#"
+    >&rarr;</a>
   </div>
 </template>
 
@@ -97,6 +158,11 @@ export default defineComponent({
     &:hover, 
     &.active {
       color: var(--color-primary);
+    }
+
+    &.active {
+      color: var(--color-background);
+      background-color: var(--color-primary) !important;  
     }
   }
 }

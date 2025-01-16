@@ -3,7 +3,9 @@ import axios from 'axios'
 const API_BASE_URL = "http://localhost:8001";
 
 export default class RestClient {
-    async findAllMenuItems(pageNumber, pageSize) {
+    async findAllMenuItems(
+        pageNumber: number, pageSize: number
+    ) {
         const url = API_BASE_URL + '/api/v1/menu/';
         try {
             const response = await axios.get(

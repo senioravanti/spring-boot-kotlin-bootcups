@@ -1,5 +1,5 @@
 <script lang="ts">
-import icons from "../assets/icons.svg";
+import icons from "../assets/icons.svg" with { type: "svg" };
 import { defineComponent } from 'vue';
 
 export default defineComponent({
