@@ -2,6 +2,16 @@
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import Table from './components/Table.vue'
+
+import { ref } from 'vue';
+
+const header = ref(null);
+const table = ref(null);
+
+function onTableChanged() {
+  console.log('event emitted !!!', header.value.activeTable.id);
+}
+
 </script>
 
 <template>
@@ -9,11 +19,11 @@ import Table from './components/Table.vue'
     <header>
       <div class="wrapper">
         <!-- Импорт шаблона -->
-        <Header msg="Виртуальная кофейня Bootcups" brandName="Bootcups" />
+        <Header @table-changed="onTableChanged" ref="header" msg="Виртуальная кофейня Bootcups" brandName="Bootcups" />
       </div>
     </header>
     <main class="container">
-      <Table/>
+      <Table ref="table"/>
     </main>
   </div>
 

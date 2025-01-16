@@ -1,24 +1,29 @@
 <script lang="ts">
-import RestClient from '../services/RestClient';
-import firstLetterToLowercase from '../utils/Utils';
-
-import type { AxiosResponse } from 'axios';
-
 import { defineComponent } from 'vue';
 
-const PAGE_SIZE = 10;
+import MenuItemTable from './MenuItemTable.vue';
+import Pagination from './Pagination.vue';
+
+import RestClient from '../services/RestClient';
+
+import {MENU_ENDPOINT, ORDERS_ENDPOINT, EMPOYEES_ENDPOINT, PAGE_SIZE} from '../utils/Constants';
 
 export default defineComponent({
-  name: '',
+  name: 'Table',
   props: {
+  },
+  components: {
+    MenuItemTable, 
+    Pagination
   },
   data() {
     // Возвращает реактивный объект, который можно использовать в шаблоне и методах
     return {
       restClient: new RestClient(),
-      restData: [],
+      pageResponse: [],
 
-      activePageButton: null
+      activePageButton: null,
+      endpoint: `/${MENU_ENDPOINT}/`
     }
   },
   computed: {
@@ -29,114 +34,44 @@ export default defineComponent({
       pageNumber: number, 
       pageSize: number
     ) {
-      this.restClient.findAllMenuItems(pageNumber, pageSize)
+      this.restClient.findAllMenuItems(
+        this.endpoint,
+
+        pageNumber, pageSize
+      )
         .then(response => {
-          this.restData = response.data || []; 
-          console.log('rest data:\n', this.restData);
+          this.pageResponse = response.data || []; 
+          console.log('rest data:\n', this.pageResponse);
           response.data;  
         })
       ;
     },
-
-    // utiils
-    unitText(menuItemMakes: string, unitLabel: string): string {
-      return menuItemMakes + ' ' + unitLabel + '.'
-    },
-
-    productNameWithTopping(productName: string, topping: string | null): string {
-      return productName + ' ' + (topping == null ? '' : firstLetterToLowercase(topping));
-    },
-
-    // handlers
-    changePage(event: Event) {
-      if (this.activePageButton != null) {
-        this.activePageButton.classList.remove('active');
-      }
-
-      let pageNumber: number | null = null
-      if (event.target.id == "previousPage") {
-
-        pageNumber = this.activePageButton.innerText - 2;
-
-        this.activePageButton = this.$refs.pageLinks[pageNumber];   
-
-      } else if (event.target.id == "nextPage") {
-
-        pageNumber = this.activePageButton?.innerText ?? 0;
-        
-        this.activePageButton = this.$refs.pageLinks[pageNumber];
-
-
-      } else {
-      
-        pageNumber = event.target.innerText - 1;
-        this.activePageButton = event.target;
-      
-      }
-      
-      this.activePageButton.classList.add('active');
-      this.loadDataFromBackend(pageNumber, PAGE_SIZE)
-
+    onPageNumberChanged() {
+      this.loadDataFromBackend(this.$refs.pagination.pageNumber, PAGE_SIZE);
     }
   },
   mounted() {
-    this.loadDataFromBackend(0, PAGE_SIZE);
+    this.loadDataFromBackend(
+      0, PAGE_SIZE
+    );
+    console.log('menu endpoint', MENU_ENDPOINT);
   }
 })
 </script>
 
 <template>
   <div class="container container-table">
-    <h3>Меню</h3>  
-    <table>
-      <thead>
-        <tr>
-          <th>№</th>
-          <th>Название</th>
-          <th>Объем порции</th>
-          <th>Цена</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- <tr></tr> -->
-        <tr v-for="data in restData.content" v-bind:key = "data.id">
-          <td>{{ data.id }}</td>
-          <td class="align-left">{{ productNameWithTopping(data.product.name, data.topping) }}</td>
-          <td>{{ unitText(data.makes, data.unit.label) }}</td>
-          <td>{{ data.price }}</td>
-          <!-- <td>{{ new Date(Date.parse(data.birth_date)).toLocaleDateString('ru-RU') }}</td> -->
-        </tr>
-      </tbody>
-      <tfoot>
-      </tfoot>
-    </table>
+    <MenuItemTable :pageResponse="pageResponse"/>
   </div>
+
   <div class="container paging">
-    <a 
-      @click="changePage" 
+    <Pagination 
+      ref="pagination" @page-number-changed="onPageNumberChanged"
 
-      id="previousPage"
-
-      v-show="restData.hasPrevious === true" class="page-link" href="#"
-    >&larr;</a>
-    
-    <a 
-      @click="changePage" 
-      
-      v-for="i in restData.totalPages" 
-      ref="pageLinks"
-
-      :class="['page-link', {'active': activePageButton === null && i === 1}]" href="#"
-    >{{ i }}</a>
-    
-    <a 
-      @click="changePage" 
-
-      id="nextPage"
-
-      v-show="restData.hasNext === true" 
-      class="page-link" href="#"
-    >&rarr;</a>
+      :totalPages="pageResponse.totalPages"
+      :hasPrevious="pageResponse.hasPrevious"
+      :hasNext="pageResponse.hasNext"
+    />
   </div>
 </template>
 

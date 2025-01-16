@@ -24,7 +24,7 @@ $footer-height: 128px;
   --vt-c-text-light-1: var(--vt-c-indigo);
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+  --vt-c-text-dark-2: #C1BDB3;
 
   --vt-c-header-light: #402E2A;
   --vt-c-header-dark: #93827F;
@@ -62,6 +62,8 @@ $footer-height: 128px;
     --color-text: var(--vt-c-text-dark-2);
 
     --color-header-background: var(--vt-c-header-dark);
+
+    --color-primary:  #59CD90;
   }
 }
 

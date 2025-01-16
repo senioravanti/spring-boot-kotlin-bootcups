@@ -1,13 +1,34 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import {MENU_ENDPOINT, ORDERS_ENDPOINT, EMPOYEES_ENDPOINT} from '../utils/Constants';
+
 export default defineComponent({
   props: {
     msg: { type: String, required: true },
     brandName: { type: String, required: true }
   },
   data() {
-    return {};
+    return {
+      menuId: MENU_ENDPOINT,
+      ordersId: ORDERS_ENDPOINT,
+      employeeId: EMPOYEES_ENDPOINT,
+
+      activeTable: null
+    };
+  },
+  methods: {
+    onChangeTable(event: Event) {
+      if (this.activeTable === null) {
+        this.activeTable = this.$refs.initTable
+      } 
+      this.activeTable.classList.remove('active');  
+
+      this.activeTable = event.target
+      this.activeTable.classList.add('active')
+
+      this.$emit('tableChanged');
+    }
   },
   mounted() {
     this.brandName
@@ -35,13 +56,32 @@ export default defineComponent({
     <div class="container nav-links">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link active" href="#">Меню</a>
+            <a 
+              @click="onChangeTable" 
+              :id="menuId"
+              ref="initTable"
+              
+              class="nav-link active" href="#"
+            >
+              Меню</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Очередь заказов</a>
+            <a 
+              @click="onChangeTable"
+              :id="ordersId"
+
+              class="nav-link" href="#"
+            >
+              Очередь заказов</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Сотрудники</a>
+            <a 
+              @click="onChangeTable"
+              :id="employeeId"
+
+              class="nav-link" href="#"
+            >
+              Сотрудники</a>
           </li>
         </ul>
     </div>
