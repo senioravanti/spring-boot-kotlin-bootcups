@@ -9,11 +9,14 @@ const header = ref(null);
 const table = ref(null);
 
 function onTableChanged() {
-  const newEndpoint = `/${header.value.activeTable.id}/`; 
+  const currentTableId = header.value.activeTable.id;
+  const newEndpoint = `/${currentTableId}/`; 
 
   // table.value.endpoint = newEndpoint;
 
   console.log('table changed: ', header.value.activeTable.id);
+  table.value.onCancelEditItems();
+
   table.value.loadDataFromBackend(0, newEndpoint);
   console.log('request was send')
 }

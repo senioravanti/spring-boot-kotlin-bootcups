@@ -32,7 +32,7 @@ export default defineComponent({
     <div class="container repo-icons">
       <a v-for="link in repoLinks" :key="link.iconId" :href="link.url">
         <svg xmlns="http://www.w3.org/2000/svg">
-          <use :href="`${link.href}`" />
+          <use :href="link.href" />
         </svg>
       </a>
     </div>

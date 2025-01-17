@@ -55,7 +55,7 @@ table {
 th, td {
   border: 1px solid;
 
-  padding: .5rem 1rem;
+  padding: 1.25rem 1rem;
 }
 
 th {
@@ -70,6 +70,75 @@ td.align-left {
 }
 td.align-right {
   text-align: right;
+}
+
+button {
+  background: transparent;
+
+  border: 1px solid var(--border-color);
+  border-radius: .75rem;
+
+  margin: 0;
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+
+  font-size: 1rem;
+  font-weight: 500; 
+
+  color: var(--color-text);
+
+  cursor: pointer;
+
+  &:disabled {
+    opacity: .25;
+    cursor: not-allowed;
+  }
+}
+
+.actions-container {
+  display: inline-flex;
+  gap: 1.5rem;
+
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: -.75rem;
+  margin-bottom: -.75rem;
+
+  a {
+    border-radius: 50px;
+    padding: .75rem;
+  }
+
+  & svg {
+    width: 24px;
+    height: 24px;  
+
+    --icon-stroke-color: var(--color-primary);
+  }  
+
+  #edit-action {
+    & svg {
+      --icon-stroke-color: rgb(var(--color-info));
+      --icon-stroke-width: 1.5px;
+    }
+
+    &:hover {
+      background-color: rgba(var(--color-info), .5) !important;  
+    }
+  }
+  #delete-action {
+    svg {
+      --icon-stroke-color: rgb(var(--color-danger));
+      --icon-stroke-width: 2px;
+    }
+
+    &:hover {
+      background-color: rgba(var(--color-danger), .25) !important;  
+    }
+  }
 }
 
 @media (hover: hover) {

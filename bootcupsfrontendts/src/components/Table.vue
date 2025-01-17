@@ -5,6 +5,7 @@ import MenuItemTable from './MenuItemTable.vue';
 import OrdersTable from './OrdersTable.vue';
 import EmployeeTable from './EmployeeTable.vue';
 
+import type { AxiosResponse } from 'axios';
 
 import Pagination from './Pagination.vue';
 
@@ -27,8 +28,13 @@ export default defineComponent({
       restClient: new RestClient(),
       pageResponse: [],
 
-      activePageButton: null,
+      
       endpoint: `/${MENU_ENDPOINT}/`,
+      method: 'get',
+
+      currentTable: null,
+
+      isShowActions: false,
 
       menuItemsTable: MENU_ENDPOINT,
       ordersTable: ORDERS_ENDPOINT,
@@ -42,54 +48,128 @@ export default defineComponent({
     loadDataFromBackend(
       pageNumber: number, 
       endpoint: string,
+      method: string = 'get',
       pageSize: number = PAGE_SIZE
     ) {
       console.log('endpoint: ', endpoint);
-      this.restClient
+
+      let response: Promise<AxiosResponse<any, any> | null> | null = null;
+
+      if (method == 'get') {
+        response = this.restClient
         .findAllMenuItems(
           endpoint,
 
           pageNumber, pageSize
-        )
-        .then(response => {
-          this.pageResponse = response.data || []; 
-          this.endpoint = endpoint;
-          
-          console.log(
-            'rest data:\nendpoint: ', 
-            
-            this.pageResponse, 
-            this.endpoint
-          );
+        );  
+      }
 
-          response.data; 
-        })
-      ;
+      if (response != null) {
+        response.then(
+          r => {
+            this.pageResponse = r?.data ?? []; 
+            this.endpoint = endpoint;
+          
+            console.log(
+              'rest data:\nendpoint: ', 
+            
+              this.pageResponse, 
+              this.endpoint
+            ); 
+          }
+        );  
+      } else {
+        console.log('Передан недопустымый метод', method);
+      }
     },
+
     onPageNumberChanged() {
       this.loadDataFromBackend(
         this.$refs.pagination.pageNumber,
-        this.endpoint
+        this.endpoint,
+        this.method
       );
+    },
+
+    updateCurrentTable() {      
+      if (this.endpoint.includes(MENU_ENDPOINT)) {
+          this.currentTable = this.$refs.menuItemTable;
+      } else if (this.endpoint.includes(ORDERS_ENDPOINT)) {
+        this.currentTable = this.$refs.ordersTable;
+      } else if (this.endpoint.includes(EMPOYEES_ENDPOINT)) {
+        this.currentTable = this.$refs.employeeTable;
+      } else {
+        console.log('Задано некорректное название таблицы');
+      }
+    },
+
+    onCancelEditItems() {
+      this.updateCurrentTable();
+      this.currentTable.isShowActions = false;
+      this.isShowActions = false;
+
+      this.$refs.editItemsBtn.removeAttribute('disabled');
+      this.$refs.editItemsBtn.classList.remove('btn-danger');
+
+      this.$refs.editItemsBtn.classList.add('btn-info');
+      this.$refs.editItemsBtn.classList.add('btn-fixed-width');
+    
+      this.$refs.editItemsBtn.innerText = 'Редактировать';
+    },
+
+    onChangeEditItemsButtonState() {
+      this.updateCurrentTable();
+      if (this.currentTable.checkedCheckboxesCount === 0) {
+        this.$refs.editItemsBtn.setAttribute('disabled', 'disabled');
+      } else {
+        this.$refs.editItemsBtn.removeAttribute('disabled');
+      }
+    },
+
+    onEditItems(event: Event) {
+      this.onChangeEditItemsButtonState();
+
+      this.updateCurrentTable();
+      this.currentTable.isShowActions = true;
+      this.isShowActions = true;
+
+      this.$refs.editItemsBtn.classList.remove('btn-info');
+      this.$refs.editItemsBtn.classList.remove('btn-fixed-width');
+    
+
+      this.$refs.editItemsBtn.classList.add('btn-danger');
+      
+      this.$refs.editItemsBtn.innerText = 'Удалить выбранные';
     }
   },
   mounted() {
     console.log('mounted: endpoint: ', this.endpoint);
     this.loadDataFromBackend(
       0,
-      this.endpoint
+      this.endpoint,
+      this.method
     );
+    this.onCancelEditItems();
   }
 })
 </script>
 
 <template>
+  <div class="container menu-container">
+    <button @click="onCancelEditItems" v-show="isShowActions === true" class="btn-fixed-width btn-cancel">Отменить</button>
+    <button ref="editItemsBtn" @click="onEditItems">Редактировать</button>
+  </div>
+
   <div 
     v-if="endpoint.includes(menuItemsTable)" 
     
     class="container container-table"
   >
-    <MenuItemTable :pageResponse="pageResponse"/>
+    <MenuItemTable
+      @change-edit-items-button-state="onChangeEditItemsButtonState"
+      ref="menuItemTable"
+      :pageResponse="pageResponse"
+    />
   </div>
 
   <div 
@@ -97,7 +177,11 @@ export default defineComponent({
     
     class="container container-table"
   >
-    <OrdersTable :pageResponse="pageResponse"/>
+    <OrdersTable 
+      @change-edit-items-button-state="onChangeEditItemsButtonState"
+      ref="ordersTable"
+      :pageResponse="pageResponse"
+    />
   </div>
 
   <div 
@@ -105,7 +189,11 @@ export default defineComponent({
     
     class="container container-table"
   >
-    <EmployeeTable :pageResponse="pageResponse"/>
+    <EmployeeTable 
+      @change-edit-items-button-state="onChangeEditItemsButtonState"
+      ref="employeeTable"
+      :pageResponse="pageResponse"
+    />
   </div>
 
   <div class="container paging">
@@ -121,4 +209,30 @@ export default defineComponent({
 </template>
 
 <style lang="scss">
+  .menu-container {
+    width: 100%;
+
+    justify-content: end;
+    gap: 1.5rem;
+  }
+
+  .btn {
+    color: var(--color-background);
+    &-fixed-width {
+      width: 150px;
+      text-align: center;
+    }
+    &-info {
+      @extend .btn;
+      background-color: rgb(var(--color-info));
+    }
+    &-cancel {
+      @extend .btn;
+      background-color: var(--color-primary);
+    }
+    &-danger {
+      @extend .btn;
+      background-color: rgb(var(--color-danger));
+    }
+  }
 </style>
